@@ -1,11 +1,12 @@
-import { Schema } from '@nestjs/mongoose';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, ValidationPipe } from '@nestjs/common';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { User, UserSchema } from './schemas/users.schema';
 import { Account, AccountSchema } from './schemas/account.schema';
+import { UserService } from './services/users.service';
+import { LoggerMiddleware } from './middlewares/logger.middleware';
 
 
 @Module({
@@ -32,6 +33,12 @@ import { Account, AccountSchema } from './schemas/account.schema';
   ],
   providers: [
     AuthService,
+    UserService,
+    ValidationPipe,
   ],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

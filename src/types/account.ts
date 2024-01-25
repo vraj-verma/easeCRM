@@ -3,6 +3,7 @@ export type Account = {
      name?: string;
      address?: Address;
      avatar?: string;
+     bio?: string;
      plan?: Plan
      users_limit?: number;
      users_used?: number;
@@ -16,7 +17,7 @@ export enum Plan {
      pro = 'Pro'
 }
 
-export interface Address {
+export class Address {
      street?: string;
      city?: string;
      country?: string;
