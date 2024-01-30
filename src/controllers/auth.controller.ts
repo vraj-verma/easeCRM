@@ -8,10 +8,7 @@ import { AuthUser, Role, Status } from "../types/authUser";
 import { Plan } from "../types/account";
 import { ValidationPipe } from "../pipes/validation.pipe";
 import { JoiValidationSchema } from "../validations/schema.validation";
-
-
-const mailchimp = require("@mailchimp/mailchimp_transactional");
-
+import { MailService } from "src/mails/mail-template.service";
 
 @Controller('/v1/api/auth/')
 export class AuthController {
@@ -19,6 +16,7 @@ export class AuthController {
           private authService: AuthService,
           private userService: UserService,
           // private mailChimp: MailChimp,
+          private mailService: MailService,
      ) { }
 
      @Post('signup')
@@ -68,7 +66,6 @@ export class AuthController {
                users_used: 2
           }
 
-
           if (!account_id || !user) {
                throw new HttpException(
                     `Account did not set up`,
@@ -76,6 +73,9 @@ export class AuthController {
                )
           }
 
+          this.mailService.sendWelcomeEmail(userData)
+          
           res.status(201).json(authUser);
      }
+
 }
