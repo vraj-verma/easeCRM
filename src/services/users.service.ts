@@ -47,6 +47,6 @@ export class UserService {
      }
 
      async getApiKey(apiKey: string) {
-          return {}
+          return null;
      }
 }

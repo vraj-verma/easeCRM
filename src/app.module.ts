@@ -14,6 +14,12 @@ import { BullModule } from '@nestjs/bull';
 import { EmailProcessor } from './queues/email.queue';
 import { Logs, LogsSchema } from './schemas/logs.schema';
 import { JwtModule } from '@nestjs/jwt';
+import { Schemas } from './mongoSchemas/schemas.config';
+import { FileSizeValidationPipe } from './pipes/fileSizeValidation.pipe';
+import { ProfileService } from './services/profile.service';
+import { ProfileController } from './controllers/profile.controller';
+import { JwtStrategy, TokenStrategy } from './security/jwt.strategy';
+import { JwtAuthGuard } from './security/jwt.guard';
 
 
 @Module({
@@ -25,22 +31,10 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '60s' }
     }),
     MongooseModule.forRoot(process.env.MONGO_URI, { dbName: process.env.MONGO_DB }),
-    MongooseModule.forFeature(
-      [
-        {
-          name: Account.name, schema: AccountSchema
-        },
-        {
-          name: User.name, schema: UserSchema
-        },
-        {
-          name: Logs.name, schema: LogsSchema
-        }
-      ]
-    ),
+    MongooseModule.forFeature(Schemas),
     MailerModule.forRoot(
       {
         transport: {
@@ -66,13 +60,19 @@ import { JwtModule } from '@nestjs/jwt';
   ],
   controllers: [
     AuthController,
+    ProfileController,
   ],
   providers: [
     AuthService,
     UserService,
+    JwtStrategy,
+    JwtAuthGuard,
+    TokenStrategy,
     ValidationPipe,
     MailService,
     EmailProcessor,
+    FileSizeValidationPipe,
+    ProfileService,
   ],
 })
 export class AppModule implements NestModule {

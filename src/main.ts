@@ -9,6 +9,7 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
+  app.setGlobalPrefix('v1/api'); // for every controller
 
   await app.listen(5000);
 }

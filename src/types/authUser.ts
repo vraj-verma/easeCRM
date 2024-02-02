@@ -3,7 +3,7 @@ export type AuthUser = {
      name: string;
      status: Status;
      account_id: string;
-     user_id: string;
+     _id: string;
      role: Role;
      users_used: number;
      users_limit: number;

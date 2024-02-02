@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Types, model } from "mongoose";
+import { Document, Types } from "mongoose";
 import { Address, Plan } from "../types/account";
 import { Role, Status } from "../types/authUser";
 

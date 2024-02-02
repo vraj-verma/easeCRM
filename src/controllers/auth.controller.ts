@@ -23,7 +23,7 @@ import { MailService } from "../mails/mail-template.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
 import { JwtService } from "@nestjs/jwt";
 
-@Controller('/v1/api/auth/')
+@Controller('auth')
 export class AuthController {
      constructor(
           private authService: AuthService,
@@ -73,7 +73,7 @@ export class AuthController {
 
           const authUser: AuthUser = {
                account_id,
-               user_id: user.user_id,
+               _id: user.user_id,
                email: data.email,
                role: Role.owner,
                status: Status.active,
