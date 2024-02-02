@@ -12,6 +12,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { MailService } from './mails/mail-template.service';
 import { BullModule } from '@nestjs/bull';
 import { EmailProcessor } from './queues/email.queue';
+import { Logs, LogsSchema } from './schemas/logs.schema';
+import { JwtModule } from '@nestjs/jwt';
 
 
 @Module({
@@ -19,6 +21,11 @@ import { EmailProcessor } from './queues/email.queue';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: './.env'
+    }),
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '60s' },
     }),
     MongooseModule.forRoot(process.env.MONGO_URI, { dbName: process.env.MONGO_DB }),
     MongooseModule.forFeature(
@@ -28,8 +35,10 @@ import { EmailProcessor } from './queues/email.queue';
         },
         {
           name: User.name, schema: UserSchema
+        },
+        {
+          name: Logs.name, schema: LogsSchema
         }
-
       ]
     ),
     MailerModule.forRoot(

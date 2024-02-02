@@ -4,7 +4,7 @@ import { Queue } from 'bull';
 
 
 @Injectable()
-export class MailService {
+export class MailService { 
      constructor(
           @InjectQueue('sendingMail') private emailQueue: Queue,
      ) { }

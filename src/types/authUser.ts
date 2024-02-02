@@ -11,7 +11,7 @@ export type AuthUser = {
 
 export enum Status {
      active = 'Active',
-     deactice = 'Deactive'
+     deactive = 'Deactive'
 }
 
 export enum Role {

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types, model } from "mongoose";
 import { Address, Plan } from "../types/account";
-import { Role } from "../types/authUser";
+import { Role, Status } from "../types/authUser";
 
 export type AccountDocument = Account & Document;
 
@@ -21,6 +21,9 @@ export class Account {
 
      @Prop()
      avatar?: string;
+
+     @Prop({ default: Status.active })
+     status: Status;
 
      @Prop()
      address?: Address;
