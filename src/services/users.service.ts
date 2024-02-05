@@ -42,7 +42,6 @@ export class UserService {
                },
           ]);
 
-
           return response ? response[0] : null;
      }
 

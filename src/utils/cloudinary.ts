@@ -11,7 +11,6 @@ cloudinary.config(
 
 export const uploadOnCloudinary = async (localPath: string) => {
      if (!localPath) return null;
-
      try {
           const response = await cloudinary.uploader.upload(localPath);
           return response.url;

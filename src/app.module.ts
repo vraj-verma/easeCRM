@@ -1,18 +1,20 @@
 require('dotenv').config();
-import { MiddlewareConsumer, Module, NestModule, ValidationPipe } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  ValidationPipe
+} from '@nestjs/common';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import { User, UserSchema } from './schemas/users.schema';
-import { Account, AccountSchema } from './schemas/account.schema';
 import { UserService } from './services/users.service';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MailService } from './mails/mail-template.service';
 import { BullModule } from '@nestjs/bull';
 import { EmailProcessor } from './queues/email.queue';
-import { Logs, LogsSchema } from './schemas/logs.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { Schemas } from './mongoSchemas/schemas.config';
 import { FileSizeValidationPipe } from './pipes/fileSizeValidation.pipe';
