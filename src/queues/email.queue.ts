@@ -19,15 +19,17 @@ export class EmailProcessor {
 
           const { data } = job;
 
-          const html = emailTemplate.replace('[Customer Name]', data.name);
+          const html = emailTemplate.replace('[Customer Name]', data.name).replace('token', data.token);
 
-          await this.mailService.sendMail({
-               ...data,
-               to: data.email,
-               from: `Sumit from easeCRM <${process.env.GMAIL_USER}>`,
-               subject: 'Welcome to easeCRM! 🚀',
-               html: html
-          });
+          await this.mailService.sendMail(
+               {
+                    ...data,
+                    to: data.email,
+                    from: `Sumit from easeCRM <${process.env.GMAIL_USER}>`,
+                    subject: 'Welcome to easeCRM! 🚀',
+                    html: html,
+               }
+          );
      }
 
 }

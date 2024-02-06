@@ -12,6 +12,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { User } from "../types/user";
 import { Plan } from "../types/account";
+import { JwtService } from "@nestjs/jwt";
 import { Signin } from "../types/signin";
 import { Signup } from "../types/signup";
 import { Request, Response } from "express";
@@ -21,7 +22,6 @@ import { ValidationPipe } from "../pipes/validation.pipe";
 import { AuthUser, Role, Status } from "../types/authUser";
 import { MailService } from "../mails/mail-template.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
-import { JwtService } from "@nestjs/jwt";
 
 @Controller('auth')
 export class AuthController {
@@ -66,10 +66,20 @@ export class AuthController {
                email: data.email,
                name: data.name ? data.name : 'John Doe',
                role: Role.owner,
-               password: data.password
+               password: data.password,
+               verify: false,
           }
 
           const user = await this.userService.createUser(userData);
+
+          const payload = {
+               user_id: user._id,
+               email: data.email
+          }
+
+          const token = this.jwtService.sign(payload, { expiresIn: '1h' })
+
+          userData.token = token;
 
           const authUser: AuthUser = {
                account_id,
@@ -79,7 +89,8 @@ export class AuthController {
                status: Status.active,
                name: data.name,
                users_limit: 1,
-               users_used: 2
+               users_used: 2,
+               token
           }
 
           if (!account_id || !user) {
@@ -91,7 +102,10 @@ export class AuthController {
 
           this.mailService.sendWelcomeEmail(userData);
 
-          res.status(201).json(authUser);
+          res
+               .status(201)
+               .cookie('token', token)
+               .json(authUser);
      }
 
      @Post('signin')
@@ -149,5 +163,57 @@ export class AuthController {
                );
      }
 
+
+     @Get('verifyAccount')
+     async verifyAccount(
+          @Req() req: Request,
+          @Res() res: Response,
+          @Query('token') token: string
+     ) {
+          if (!token) {
+               throw new HttpException(
+                    `Token should not be empty!`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
+
+          const decodedToken = await this.jwtService.verify(token);
+
+          if (!decodedToken) {
+               throw new HttpException(
+                    `Token invalid or expired`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
+
+          const authUser = await this.userService.getUserByEmail(decodedToken.email);
+
+          if (!authUser) {
+               throw new HttpException(
+                    `User with email: ${decodedToken.email} does not exist`,
+                    HttpStatus.NOT_FOUND
+               );
+          }
+
+          if (authUser.verify) {
+               throw new HttpException(
+                    `User already verified.`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
+
+          const verify = await this.userService.verfiyUser(decodedToken.email);
+
+          if (!verify) {
+               throw new HttpException(
+                    `Something went wrong, Please try again`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
+
+          res.status(200).json({ message: 'User verified.' })
+
+
+     }
 
 }

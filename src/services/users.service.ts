@@ -1,8 +1,8 @@
+import { Model } from "mongoose";
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { User, UserDocument } from "../schemas/users.schema";
 import { User as userType } from "../types/user";
+import { User, UserDocument } from "../schemas/users.schema";
 
 @Injectable()
 export class UserService {
@@ -45,6 +45,36 @@ export class UserService {
 
           return response ? response[0] : null;
      }
+
+     async verfiyUser(email: string) {
+          // const response = await this.db.aggregate(
+          //      [
+          //           {
+          //                $match: { email }
+          //           },
+          //           {
+          //                $set: {
+          //                     verify: true
+          //                }
+          //           }
+          //      ]
+          // );
+
+          const response = await this.db.updateOne(
+               {
+                    email
+               },
+               {
+                    $set: {
+                         verify: true
+                    }
+               }
+          );
+
+          return response ? response : null;
+     }
+
+
 
      async getApiKey(apiKey: string) {
           return null;
