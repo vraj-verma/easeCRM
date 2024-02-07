@@ -7,14 +7,18 @@ import { User } from "src/types/user";
 
 @Injectable()
 export class AuthService {
+     verfiyUser(email: any) {
+          throw new Error("Method not implemented.");
+     }
      constructor(
           @InjectModel(Account.name) private accountDB: Model<AccountDocument>
      ) { }
 
 
-     async signup(data: User): Promise<string> {
-          const response = await this.accountDB.create(data);
+     async signup(user: User): Promise<string> {
+          const response = await this.accountDB.create(user);
           return response ? response._id : null;
      }
+
 
 }

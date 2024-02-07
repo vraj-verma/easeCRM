@@ -10,13 +10,12 @@ import {
      UseInterceptors
 } from "@nestjs/common";
 import { Request, Response } from "express";
+import { AuthUser } from "../types/authUser";
 import { uploadOnLocal } from "../utils/multer";
+import { JwtAuthGuard } from "../security/jwt.guard";
+import { uploadOnCloudinary } from "../utils/cloudinary";
 import { ProfileService } from "../services/profile.service";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
-import { FileSizeValidationPipe } from "../pipes/fileSizeValidation.pipe";
-import { uploadOnCloudinary } from "src/utils/cloudinary";
-import { JwtAuthGuard } from "src/security/jwt.guard";
-import { AuthUser } from "src/types/authUser";
 
 @UseGuards(JwtAuthGuard)
 @Controller('profile')
@@ -40,7 +39,7 @@ export class ProfileController {
           @UploadedFiles() files: { avatar?: Express.Multer.File[] }
      ) {
 
-          const { email, _id } = <AuthUser>req.user;
+          const authUser = <AuthUser>req.user;
 
           const file = files.avatar[0].path;
 
@@ -51,7 +50,7 @@ export class ProfileController {
                );
           }
 
-          const avatarUrl = await uploadOnCloudinary(file);
+          const avatarUrl = await uploadOnCloudinary(file, 'avatar');
 
           if (!avatarUrl) {
                throw new HttpException(
@@ -61,8 +60,8 @@ export class ProfileController {
           }
 
           const profile = {
-               user_id: _id,
-               email,
+               user_id: authUser._id,
+               email: authUser.email,
                avatar: avatarUrl
           }
 
@@ -70,9 +69,8 @@ export class ProfileController {
 
           res.status(200).json({
                message: "Avatar uploaded",
-               avatar: avatarUrl
+               authUser
           });
-
      }
 
 }

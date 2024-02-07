@@ -9,10 +9,10 @@ cloudinary.config(
      }
 );
 
-export const uploadOnCloudinary = async (localPath: string) => {
+export const uploadOnCloudinary = async (localPath: string, folder: string) => {
      if (!localPath) return null;
      try {
-          const response = await cloudinary.uploader.upload(localPath);
+          const response = await cloudinary.uploader.upload(localPath, { folder });
           return response.url;
      } catch (e) {
           console.log(e);

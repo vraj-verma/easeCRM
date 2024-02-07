@@ -1,12 +1,15 @@
 export type AuthUser = {
+     _id: string;
+     account_id: string;
      email: string;
      name: string;
      status: Status;
-     account_id: string;
-     _id: string;
      role: Role;
      users_used: number;
      users_limit: number;
+     avatar?: string;
+     verify?: boolean;
+     token?: string;
 }
 
 export enum Status {

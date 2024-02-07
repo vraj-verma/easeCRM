@@ -8,4 +8,6 @@ export type User = {
      name?: string;
      role: Role;
      password?: string;
+     verify?: boolean;
+     token?: string;
 }
