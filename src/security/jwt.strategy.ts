@@ -3,6 +3,8 @@ import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { UserService } from "../services/users.service";
 import { Strategy as customStrategy } from 'passport-custom';
+import { ApiKeyService } from "../services/apiKey.service";
+import { Role } from "src/types/authUser";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -37,14 +39,22 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 @Injectable()
 export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
      constructor(
-          private userService: UserService, // change this to ApiKeyService
+          private apiKeyService: ApiKeyService, // change this to ApiKeyService
      ) {
           super();
      }
 
      async validate(req: Request) {
           const apiKey = req?.headers['apikey'];
-          const response = await this.userService.getApiKey(apiKey);
+          const response = await this.apiKeyService.getApiKeyByApiKey(apiKey);
+
+          if (response['role'] == Role.viewer) {
+               throw new HttpException(
+                    `Unauthorized, your current role does not allow to access.`,
+                    HttpStatus.UNAUTHORIZED
+               );
+          }
+
           if (!response) {
                throw new HttpException(`Unauthorized`, HttpStatus.UNAUTHORIZED);
           }

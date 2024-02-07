@@ -4,6 +4,7 @@ import {
     SchemaFactory
 } from "@nestjs/mongoose";
 import { Document } from "mongoose";
+import { Role } from "../types/authUser";
 
 export type ApiKeyDocument = ApiKey & Document
 
@@ -16,6 +17,16 @@ export class ApiKey {
     @Prop()
     account_id?: string;
 
+    @Prop()
+    name: string;
+
+    @Prop()
+    role: Role;
+
+    @Prop({ default: true })
+    is_enabled: boolean;
+
 }
 
 export const ApiKeySchema = SchemaFactory.createForClass(ApiKey);
+

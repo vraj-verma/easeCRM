@@ -24,10 +24,8 @@ export class ApiKeyService {
         return response ? response : null;
     }
 
-    async getApiKeyByApiKey(apiKey: string, account_id: string) {
-        const response = await this.apiKeyDB.findOne(
-                        // logic goes here
-        );
+    async getApiKeyByApiKey(apiKey: string) {
+        const response = await this.apiKeyDB.findOne({ apiKey });
         return response ? response : null;
     }
 

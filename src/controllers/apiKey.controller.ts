@@ -1,16 +1,31 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Get,
+    HttpException,
+    HttpStatus,
+    Param,
+    Post,
+    Req,
+    Res,
+    UseGuards
+} from "@nestjs/common";
 import { Request, Response } from 'express'
 import { ApiKey } from "../schemas/apiKey.schema";
 import { ApiKeyService } from "../services/apiKey.service";
 import { JwtAuthGuard } from "../security/jwt.guard";
 import { AuthUser } from "../types/authUser";
+import { Utility } from "src/utils/utility";
+// import { Utility } from "../utils/utility";
+
 
 @UseGuards(JwtAuthGuard)
 @Controller('apikey')
 export class ApiKeyController {
 
     constructor(
-        private apiKeyService: ApiKeyService
+        private apiKeyService: ApiKeyService,
+        private utility: Utility,
     ) { }
 
     @Post()
@@ -19,10 +34,21 @@ export class ApiKeyController {
         @Res() res: Response,
         @Body() apiKey: ApiKey
     ) {
-
         const { account_id } = <AuthUser>req.user;
 
+        const apiKeys = await this.apiKeyService.getApiKeys(account_id);
+
+        if (apiKeys) {
+            if (apiKeys.find(key => key['name'] === apiKey.name)) {
+                throw new HttpException(
+                    `Api key name is already exist`,
+                    HttpStatus.BAD_REQUEST
+                );
+            }
+        }
+
         apiKey.account_id = account_id;
+        apiKey.apiKey = this.utility.randomNumber();
 
         const response = await this.apiKeyService.createApiKey(apiKey);
         if (!response) {
@@ -55,16 +81,14 @@ export class ApiKeyController {
         res.status(200).json(response);
     }
 
-    @Get(':apikey')
+    @Get('/:apikey')
     async getApiKeyByApiKey(
         @Req() req: Request,
         @Res() res: Response,
-        @Param('apiKey') apiKey: string
+        @Param('apikey') apiKey: string
     ) {
 
-        const { account_id } = <AuthUser>req.user;
-
-        const response = await this.apiKeyService.getApiKeyByApiKey(apiKey, account_id);
+        const response = await this.apiKeyService.getApiKeyByApiKey(apiKey);
 
         if (!response) {
             throw new HttpException(
@@ -73,7 +97,7 @@ export class ApiKeyController {
             );
         }
 
-
+        res.status(200).json(response);
 
     }
 }
