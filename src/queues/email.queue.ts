@@ -17,19 +17,23 @@ export class EmailProcessor {
      @Process('welcome')
      async sendWelcomeEmail(job: Job<Mail>) {
 
-          const { data } = job;
+          try {
+               const { data } = job;
 
-          const html = emailTemplate.replace('[Customer Name]', data.name).replace('token', data.token);
+               const html = emailTemplate.replace('[Customer Name]', data.name).replace('token', data.token);
 
-          await this.mailService.sendMail(
-               {
-                    ...data,
-                    to: data.email,
-                    from: `Sumit from easeCRM <${process.env.GMAIL_USER}>`,
-                    subject: 'Welcome to easeCRM! 🚀',
-                    html: html,
-               }
-          );
+               await this.mailService.sendMail(
+                    {
+                         ...data,
+                         to: data.email,
+                         from: `Sumit from easeCRM <${process.env.GMAIL_USER}>`,
+                         subject: 'Welcome to easeCRM! 🚀',
+                         html: html,
+                    }
+               );
+          } catch (error) {
+               console.log('Welcome email not sent, please start redis on docker', error);
+          }
      }
 
 }

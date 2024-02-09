@@ -73,6 +73,11 @@ export class UserService {
           return response ? response : null;
      }
 
+     async getAccountByAccountId(account_id: string) {
+          const response = await this.db.findOne({ account_id }).lean();
+          return response ? response : null;
+     }
+
 
 
      async getApiKey(apiKey: string) {

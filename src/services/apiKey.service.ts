@@ -2,11 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { ApiKey } from "src/schemas/apiKey.schema";
+import { Utility } from "src/utils/utility";
 
 @Injectable()
 export class ApiKeyService {
     constructor(
-        @InjectModel(ApiKey.name) private apiKeyDB: Model<ApiKeyService>
+        @InjectModel(ApiKey.name) private apiKeyDB: Model<ApiKeyService>,
+        private utility: Utility,
     ) { }
 
     async createApiKey(apiKey: ApiKey) {
@@ -25,7 +27,23 @@ export class ApiKeyService {
     }
 
     async getApiKeyByApiKey(apiKey: string) {
-        const response = await this.apiKeyDB.findOne({ apiKey });
+        const response = await this.apiKeyDB.findOne({ apiKey }).lean();
+        return response ? response : null;
+    }
+
+    async resetApiKey(apiKey: string) {
+        const newKey = this.utility.randomNumber();
+        const response = await this.apiKeyDB.updateOne(
+            {
+                apiKey
+            },
+            {
+                $set: {
+                    apiKey: newKey
+                }
+            }
+        );
+
         return response ? response : null;
     }
 

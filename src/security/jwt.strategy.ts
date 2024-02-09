@@ -29,7 +29,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           const user = await this.userService.getUserByEmail(email);
 
           if (!user) {
-               throw new HttpException(`Unauthorized`, HttpStatus.UNAUTHORIZED);
+               throw new HttpException(
+                    `Unauthorized`,
+                    HttpStatus.UNAUTHORIZED
+               );
+          }
+
+          if (!user.verify) {
+               throw new HttpException(
+                    `Unauthorized, Please verify your account first.`,
+                    HttpStatus.BAD_REQUEST
+               );
           }
 
           return { ...user };
@@ -39,14 +49,39 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 @Injectable()
 export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
      constructor(
-          private apiKeyService: ApiKeyService, // change this to ApiKeyService
+          private apiKeyService: ApiKeyService,
+          private userService: UserService,
      ) {
           super();
      }
 
      async validate(req: Request) {
           const apiKey = req?.headers['apikey'];
-          const response = await this.apiKeyService.getApiKeyByApiKey(apiKey);
+
+          if (!apiKey) {
+               throw new HttpException(
+                    `Unauthorized`,
+                    HttpStatus.UNAUTHORIZED
+               );
+          }
+
+          const response = await this.apiKeyService.getApiKeyByApiKey(apiKey)
+
+          if (!response) {
+               throw new HttpException(
+                    `Unauthorized`,
+                    HttpStatus.UNAUTHORIZED
+               );
+          }
+
+          const user = await this.userService.getAccountByAccountId(response['account_id']);
+
+          if (!user.verify) {
+               throw new HttpException(
+                    `Please verify your account first.`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
 
           if (response['role'] == Role.viewer) {
                throw new HttpException(
@@ -59,6 +94,6 @@ export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
                throw new HttpException(`Unauthorized`, HttpStatus.UNAUTHORIZED);
           }
 
-          return { ...response };
+          return { ...response, ...user };
      }
 }

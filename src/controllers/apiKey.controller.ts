@@ -16,8 +16,6 @@ import { ApiKeyService } from "../services/apiKey.service";
 import { JwtAuthGuard } from "../security/jwt.guard";
 import { AuthUser } from "../types/authUser";
 import { Utility } from "src/utils/utility";
-// import { Utility } from "../utils/utility";
-
 
 @UseGuards(JwtAuthGuard)
 @Controller('apikey')
@@ -59,7 +57,6 @@ export class ApiKeyController {
         }
 
         res.status(201).json(response);
-
     }
 
     @Get()
@@ -67,6 +64,7 @@ export class ApiKeyController {
         @Req() req: Request,
         @Res() res: Response,
     ) {
+
         const { account_id } = <AuthUser>req.user;
 
         const response = await this.apiKeyService.getApiKeys(account_id);
@@ -99,5 +97,34 @@ export class ApiKeyController {
 
         res.status(200).json(response);
 
+    }
+
+    @Get('reset')
+    async resetApiKey(
+        @Req() req: Request,
+        @Res() res: Response,
+        @Param('apikey') apiKey: string
+    ) {
+        const isApiKeyExist = await this.apiKeyService.getApiKeyByApiKey(apiKey);
+
+        if (!isApiKeyExist) {
+            throw new HttpException(
+                `Api key with key:${apiKey}, does not exist`,
+                HttpStatus.NOT_FOUND
+            );
+        }
+
+        const response = await this.apiKeyService.resetApiKey(apiKey);
+        if (!response) {
+            throw new HttpException(
+                `Api key did not reset`,
+                HttpStatus.SERVICE_UNAVAILABLE
+            );
+        }
+
+        res.status(200).json({
+            message: 'Apikey reset successfully.',
+            response
+        });
     }
 }
