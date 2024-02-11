@@ -25,6 +25,7 @@ import { ProfileController } from './controllers/profile.controller';
 import { JwtStrategy, TokenStrategy } from './security/jwt.strategy';
 import { FileSizeValidationPipe } from './pipes/fileSizeValidation.pipe';
 import { Utility } from './utils/utility';
+import { GoogleStrategy } from './security/google.strategy';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { Utility } from './utils/utility';
     JwtStrategy,
     JwtAuthGuard,
     TokenStrategy,
+    GoogleStrategy,
     ValidationPipe,
     MailService,
     EmailProcessor,

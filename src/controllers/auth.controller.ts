@@ -7,7 +7,8 @@ import {
      Post,
      Query,
      Req,
-     Res
+     Res,
+     UseGuards
 } from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
 import { User } from "../types/user";
@@ -22,6 +23,7 @@ import { ValidationPipe } from "../pipes/validation.pipe";
 import { AuthUser, Role, Status } from "../types/authUser";
 import { MailService } from "../mails/mail-template.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
+import { GoogleOAuthGuard } from "../security/google.guard";
 
 @Controller('auth')
 export class AuthController {
@@ -214,6 +216,16 @@ export class AuthController {
           res.status(200).json({ message: 'User verified.' })
 
 
+     }
+
+     @Get()
+     @UseGuards(GoogleOAuthGuard)
+     async googleAuth(@Req() req: Request) { }
+
+     @Get('google-redirect')
+     @UseGuards(GoogleOAuthGuard)
+     googleAuthRedirect(@Req() req:Request) {
+          return this.authService.googleOAuth(req);
      }
 
 }

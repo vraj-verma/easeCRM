@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Account, AccountDocument } from "../schemas/account.schema";
@@ -20,5 +20,16 @@ export class AuthService {
           return response ? response._id : null;
      }
 
+     async googleOAuth(req) {
+          if (!req) {
+               throw new HttpException(
+                    `No User found`, HttpStatus.BAD_REQUEST
+               )
+          }
+
+          console.log(req);
+
+          return true;
+     }
 
 }
