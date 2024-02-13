@@ -24,6 +24,7 @@ import { AuthUser, Role, Status } from "../types/authUser";
 import { MailService } from "../mails/mail-template.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
 import { GoogleOAuthGuard } from "../security/google.guard";
+import { ProfileService } from "../services/profile.service";
 
 @Controller('auth')
 export class AuthController {
@@ -32,6 +33,7 @@ export class AuthController {
           private userService: UserService,
           private mailService: MailService,
           private jwtService: JwtService,
+          private profileService: ProfileService
      ) { }
 
      @Post('signup')
@@ -295,7 +297,16 @@ export class AuthController {
 
                const token = this.jwtService.sign(payload);
 
-               this.mailService.sendWelcomeEmail({ name: user['name'], email: user['email'], token });
+               await this.mailService.sendWelcomeEmail({ name: user['name'], email: user['email'], token });
+
+               // save avatar only in google OAuth case
+               const profileInfo = {
+                    user_id: creatUser._id,
+                    email: user['email'],
+                    avatar: user['avatar']
+               }
+
+               await this.profileService.uploadAvatar(profileInfo);
 
                const authUser: AuthUser = {
                     account_id: response['account_id'],
