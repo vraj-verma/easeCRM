@@ -24,7 +24,7 @@ export class EmailProcessor {
 
                await this.mailService.sendMail(
                     {
-                         ...data,
+                         // ...data,
                          to: data.email,
                          from: `Sumit from easeCRM <${process.env.GMAIL_USER}>`,
                          subject: 'Welcome to easeCRM! 🚀',

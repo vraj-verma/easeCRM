@@ -26,7 +26,7 @@ export class User {
      role: Role;
 
      @Prop({ default: false })
-     verify?: boolean;
+     verified?: boolean;
 
 }
 

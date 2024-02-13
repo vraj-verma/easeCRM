@@ -76,7 +76,7 @@ export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
 
           const user = await this.userService.getAccountByAccountId(response['account_id']);
 
-          if (!user.verify) {
+          if (!user.verified) {
                throw new HttpException(
                     `Please verify your account first.`,
                     HttpStatus.BAD_REQUEST

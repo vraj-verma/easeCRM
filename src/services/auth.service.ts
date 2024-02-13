@@ -27,7 +27,7 @@ export class AuthService {
                )
           }
 
-          console.log(req);
+          // console.log(req);
 
           return true;
      }

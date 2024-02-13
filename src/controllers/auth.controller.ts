@@ -69,7 +69,7 @@ export class AuthController {
                name: data.name ? data.name : 'John Doe',
                role: Role.owner,
                password: data.password,
-               verify: false,
+               verified: false,
           }
 
           const user = await this.userService.createUser(userData);
@@ -199,7 +199,7 @@ export class AuthController {
 
           if (authUser.verify) {
                throw new HttpException(
-                    `User already verified.`,
+                    `Already verified.`,
                     HttpStatus.BAD_REQUEST
                );
           }
@@ -213,19 +213,107 @@ export class AuthController {
                );
           }
 
-          res.status(200).json({ message: 'User verified.' })
-
-
+          res.status(200).json(
+               {
+                    status: 'Success',
+                    message: 'Verified',
+               }
+          );
      }
 
-     @Get()
+     @Get('google')
      @UseGuards(GoogleOAuthGuard)
-     async googleAuth(@Req() req: Request) { }
+     async googleAuth() { }
 
      @Get('google-redirect')
      @UseGuards(GoogleOAuthGuard)
-     googleAuthRedirect(@Req() req:Request) {
-          return this.authService.googleOAuth(req);
+     async googleAuthRedirect(
+          @Req() req: Request,
+          @Res() res: Response,
+     ) {
+
+          const user = req.user;
+
+          const isUserExist = await this.userService.getUserByEmail(user['email']);
+
+          if (isUserExist) {
+
+               const payload = {
+                    user_id: isUserExist._id,
+                    email: user['email']
+               }
+
+               const token = this.jwtService.sign(payload);
+
+               const cookieOption = {
+                    httpOnly: true,
+                    secure: true
+               }
+
+               res
+                    .status(200)
+                    .cookie('access-token', token, cookieOption)
+                    .json(
+                         {
+                              ...isUserExist, token
+                         }
+                    );
+          } else {
+
+               const accountInitalData = {
+                    email: user['email'],
+                    name: user['name'],
+                    role: Role.owner,
+                    plan: Plan.free,
+                    users_used: 1,
+                    users_limit: 2,
+               }
+
+               const response = await this.authService.signup(accountInitalData);
+               if (!response) {
+                    throw new HttpException(
+                         `Failed to create an account with Google`,
+                         HttpStatus.NOT_IMPLEMENTED
+                    );
+               }
+
+               const userData: User = {
+                    account_id: response['_id'],
+                    email: user['email'],
+                    name: user['name'] ? user['name'] : 'John Doe',
+                    role: Role.owner,
+                    password: '',
+                    verified: false,
+               }
+
+               const creatUser = await this.userService.createUser(userData)
+
+               const payload = {
+                    user_id: creatUser._id,
+                    email: user['email']
+               }
+
+               const token = this.jwtService.sign(payload);
+
+               this.mailService.sendWelcomeEmail({ name: user['name'], email: user['email'], token });
+
+               const authUser: AuthUser = {
+                    account_id: response['account_id'],
+                    _id: creatUser._id,
+                    email: user['email'],
+                    role: Role.owner,
+                    status: Status.active,
+                    name: user['name'],
+                    users_limit: 1,
+                    users_used: 2,
+                    token
+               }
+
+               res
+                    .status(201)
+                    .cookie('token', token)
+                    .json(authUser);
+          }
      }
 
 }
