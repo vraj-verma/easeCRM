@@ -46,18 +46,6 @@ export class UserService {
      }
 
      async verfiyUser(email: string) {
-          // const response = await this.db.aggregate(
-          //      [
-          //           {
-          //                $match: { email }
-          //           },
-          //           {
-          //                $set: {
-          //                     verify: true
-          //                }
-          //           }
-          //      ]
-          // );
 
           const response = await this.db.updateOne(
                {

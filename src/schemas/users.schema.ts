@@ -28,6 +28,9 @@ export class User {
      @Prop({ default: false })
      verified?: boolean;
 
+     @Prop({ default: false })
+     oAuth?: boolean;
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

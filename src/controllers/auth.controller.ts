@@ -11,7 +11,7 @@ import {
      UseGuards
 } from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
-import { User } from "../types/user";
+// import { User } from "../types/user";
 import { Plan } from "../types/account";
 import { JwtService } from "@nestjs/jwt";
 import { Signin } from "../types/signin";
@@ -25,9 +25,12 @@ import { MailService } from "../mails/mail-template.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
 import { GoogleOAuthGuard } from "../security/google.guard";
 import { ProfileService } from "../services/profile.service";
+import { User } from "../schemas/users.schema";
+import { User as UserType } from '../types/user'
 
 @Controller('auth')
 export class AuthController {
+
      constructor(
           private authService: AuthService,
           private userService: UserService,
@@ -65,7 +68,7 @@ export class AuthController {
 
           const account_id = await this.authService.signup(accountInitalData);
 
-          const userData: User = {
+          const userData: UserType = {
                account_id: account_id,
                email: data.email,
                name: data.name ? data.name : 'John Doe',
@@ -82,8 +85,6 @@ export class AuthController {
           }
 
           const token = this.jwtService.sign(payload, { expiresIn: '1h' })
-
-          userData.token = token;
 
           const authUser: AuthUser = {
                account_id,
@@ -119,6 +120,13 @@ export class AuthController {
           @Body() signin: Signin
      ) {
           const user = await this.userService.getUserByEmail(signin.email);
+
+          if (!user.oAuth) {
+               throw new HttpException(
+                    `Created with Google, please try logging in with your Google account.`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
 
           if (!user) {
                throw new HttpException(
@@ -279,13 +287,14 @@ export class AuthController {
                     );
                }
 
-               const userData: User = {
+               const userData = {
                     account_id: response['_id'],
                     email: user['email'],
                     name: user['name'] ? user['name'] : 'John Doe',
                     role: Role.owner,
                     password: '',
                     verified: false,
+                    oAuth: true
                }
 
                const creatUser = await this.userService.createUser(userData)
