@@ -63,7 +63,7 @@ export class UserService {
           return response ? response.modifiedCount > 0 : false;
      }
 
-     async getAccountByAccountId(account_id: string) {
+     async getUserByAccountId(account_id: string) {
           const response = await this.userDB.findOne({ account_id }).lean();
           return response ? response : null;
      }

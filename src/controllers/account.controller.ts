@@ -1,9 +1,19 @@
-import { Controller, Get, Req, Res } from "@nestjs/common";
+import {
+     Controller,
+     Get,
+     HttpException,
+     HttpStatus,
+     Req,
+     Res,
+     UseGuards
+} from "@nestjs/common";
 import { Request, Response } from "express";
-import { AccountService } from "src/services/account.service";
-import { AuthUser } from "src/types/authUser";
+import { JwtAuthGuard } from "../security/jwt.guard";
+import { AccountService } from "../services/account.service";
+import { AuthUser } from "../types/authUser";
 
-@Controller()
+@UseGuards(JwtAuthGuard)
+@Controller('account')
 export class AccountController {
 
      constructor(
@@ -16,8 +26,17 @@ export class AccountController {
           @Res() res: Response
      ) {
 
-          const authUser = <AuthUser>req.user;
+          const { account_id } = <AuthUser>req.user;
 
-          // const 
+          const response = await this.accountService.getAccount(account_id);
+
+          if (!response) {
+               throw new HttpException(
+                    `No account found`,
+                    HttpStatus.NOT_FOUND
+               );
+          }
+
+          res.status(200).json(response);
      }
 }

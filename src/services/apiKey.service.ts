@@ -6,6 +6,7 @@ import { Utility } from "src/utils/utility";
 
 @Injectable()
 export class ApiKeyService {
+
     constructor(
         @InjectModel(ApiKey.name) private apiKeyDB: Model<ApiKeyService>,
         private utility: Utility,
@@ -26,7 +27,7 @@ export class ApiKeyService {
         return response ? response : null;
     }
 
-    async getApiKeyByApiKey(apiKey: string) {
+    async getApiKeyByKey(apiKey: string) {
         const response = await this.apiKeyDB.findOne({ apiKey }).lean();
         return response ? response : null;
     }
@@ -83,9 +84,15 @@ export class ApiKeyService {
                     }
                 }
             ]
+
         );
 
         return response ? response.modifiedCount > 0 : false;
+    }
+
+    async deleteApiKeys(apiKeys: string[]) {
+        const response = await this.apiKeyDB.deleteMany({ apiKey: { $in: apiKeys } });
+        return response ? response : false;
     }
 
 

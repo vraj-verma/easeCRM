@@ -1,12 +1,14 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     HttpException,
     HttpStatus,
     Param,
     Patch,
     Post,
+    Query,
     Req,
     Res,
     UseGuards
@@ -81,13 +83,13 @@ export class ApiKeyController {
     }
 
     @Get('/:apikey')
-    async getApiKeyByApiKey(
+    async getApiKeyByKey(
         @Req() req: Request,
         @Res() res: Response,
         @Param('apikey') apiKey: string
     ) {
 
-        const response = await this.apiKeyService.getApiKeyByApiKey(apiKey);
+        const response = await this.apiKeyService.getApiKeyByKey(apiKey);
 
         if (!response) {
             throw new HttpException(
@@ -106,7 +108,7 @@ export class ApiKeyController {
         @Res() res: Response,
         @Param('apikey') apiKey: string
     ) {
-        const isApiKeyExist = await this.apiKeyService.getApiKeyByApiKey(apiKey);
+        const isApiKeyExist = await this.apiKeyService.getApiKeyByKey(apiKey);
 
         if (!isApiKeyExist) {
             throw new HttpException(
@@ -154,10 +156,51 @@ export class ApiKeyController {
             );
         }
 
+        const currentStatus = apiKey['is_enabled'];
+
         res.status(201).json(
             {
-                message: `Api key with key: ${apiKey['_id']} update successfully.`
+                message: `Api key with key: ${apiKey['_id']} ${currentStatus ? 'disabled' : 'enabled'} successfully`
             }
         );
+    }
+
+    @Delete()
+    async deleteApiKeys(
+        @Req() req: Request,
+        @Res() res: Response,
+        @Query('apiKey') keys: any,
+    ) {
+
+        if (typeof keys == 'string') {
+            keys = keys.split(',')
+        }
+
+        const authUser = <AuthUser>req.user;
+
+        const apiKeys = await this.apiKeyService.getApiKeys(authUser.account_id);
+
+        if (!apiKeys) {
+            throw new HttpException(
+                `Apikey not found with account id: ${authUser.account_id}`,
+                HttpStatus.NOT_FOUND
+            );
+        }
+
+        const response = await this.apiKeyService.deleteApiKeys(keys)
+
+        if (!response) {
+            throw new HttpException(
+                `Failed to delete api key(s)`,
+                HttpStatus.NOT_FOUND
+            );
+        }
+
+        res.status(200).json(
+            {
+                message: `Apikey(s) with key: ${keys}, deleted successfully.`
+            }
+        )
+
     }
 }

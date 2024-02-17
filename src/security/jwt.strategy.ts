@@ -36,6 +36,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
                );
           }
 
+          if (!user.account.status) {
+               throw new HttpException(
+                    `Unauthorized, Your account is not Active`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
+
           if (!user.verified) {
                throw new HttpException(
                     `Unauthorized, Please verify your account first.`,
@@ -66,7 +73,7 @@ export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
                );
           }
 
-          const response = await this.apiKeyService.getApiKeyByApiKey(apiKey)
+          const response = await this.apiKeyService.getApiKeyByKey(apiKey)
 
           if (!response) {
                throw new HttpException(
@@ -75,11 +82,18 @@ export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
                );
           }
 
-          const user = await this.userService.getAccountByAccountId(response['account_id']);
+          const user = await this.userService.getUserByAccountId(response['account_id']);
 
           if (!user.verified) {
                throw new HttpException(
-                    `Please verify your account first.`,
+                    `Unauthorized, Please verify your account first.`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
+
+          if (!user['account.status']) {
+               throw new HttpException(
+                    `Unauthorized, Your account is not Active`,
                     HttpStatus.BAD_REQUEST
                );
           }
