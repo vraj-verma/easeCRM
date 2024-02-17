@@ -67,10 +67,11 @@ export class ProfileController {
 
           await this.profileService.uploadAvatar(profile);
 
-          res.status(200).json({
-               message: "Avatar uploaded",
-               authUser
-          });
+          res.status(200).json(
+               {
+                    message: "Avatar uploaded",
+               }
+          );
      }
 
 }

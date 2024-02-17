@@ -25,7 +25,6 @@ import { MailService } from "../mails/mail-template.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
 import { GoogleOAuthGuard } from "../security/google.guard";
 import { ProfileService } from "../services/profile.service";
-import { User } from "../schemas/users.schema";
 import { User as UserType } from '../types/user'
 
 @Controller('auth')
@@ -105,7 +104,13 @@ export class AuthController {
                );
           }
 
-          this.mailService.sendWelcomeEmail(userData);
+          const testEmails = ['sumitverma28004@gmail.com', 'vermavraj77@gmail.com', 'sumitvermamcale2023@bpibs.in'];
+
+          if (!testEmails.includes(data.email)) {
+               this.mailService.sendWelcomeEmail(userData);
+          }
+
+          // this.mailService.sendWelcomeEmail(userData);
 
           res
                .status(201)
@@ -121,17 +126,17 @@ export class AuthController {
      ) {
           const user = await this.userService.getUserByEmail(signin.email);
 
-          if (!user.oAuth) {
+          if (!user) {
                throw new HttpException(
-                    `Created with Google, please try logging in with your Google account.`,
-                    HttpStatus.BAD_REQUEST
+                    `User is not registered or the account is deleted, please signup first`,
+                    HttpStatus.NOT_FOUND
                );
           }
 
-          if (!user) {
+          if (user.oAuth) {
                throw new HttpException(
-                    `User is not registered, please signup first`,
-                    HttpStatus.NOT_FOUND
+                    `Created with Google, please try logging in with your Google account.`,
+                    HttpStatus.BAD_REQUEST
                );
           }
 
@@ -207,16 +212,16 @@ export class AuthController {
                );
           }
 
-          if (authUser.verify) {
+          if (authUser.verified) {
                throw new HttpException(
                     `Already verified.`,
                     HttpStatus.BAD_REQUEST
                );
           }
 
-          const verify = await this.userService.verfiyUser(decodedToken.email);
+          const accountVerified = await this.userService.verfiyUser(decodedToken.email);
 
-          if (!verify) {
+          if (!accountVerified) {
                throw new HttpException(
                     `Something went wrong, Please try again`,
                     HttpStatus.BAD_REQUEST
@@ -226,7 +231,7 @@ export class AuthController {
           res.status(200).json(
                {
                     status: 'Success',
-                    message: 'Verified',
+                    message: 'User verified',
                }
           );
      }
@@ -269,7 +274,6 @@ export class AuthController {
                          }
                     );
           } else {
-
                const accountInitalData = {
                     email: user['email'],
                     name: user['name'],
@@ -306,7 +310,11 @@ export class AuthController {
 
                const token = this.jwtService.sign(payload);
 
-               await this.mailService.sendWelcomeEmail({ name: user['name'], email: user['email'], token });
+               try {
+                    await this.mailService.sendWelcomeEmail({ name: user['name'], email: user['email'], token });
+               } catch (e) {
+                    console.log('Redis server either not started or stopped.', e)
+               }
 
                // save avatar only in google OAuth case
                const profileInfo = {

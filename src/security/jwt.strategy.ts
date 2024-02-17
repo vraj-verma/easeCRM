@@ -25,6 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
      }
 
      async validate(req: Request, payload: any) {
+
           const email = payload.email;
           const user = await this.userService.getUserByEmail(email);
 
@@ -35,7 +36,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
                );
           }
 
-          if (!user.verify) {
+          if (!user.verified) {
                throw new HttpException(
                     `Unauthorized, Please verify your account first.`,
                     HttpStatus.BAD_REQUEST
