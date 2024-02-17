@@ -26,6 +26,8 @@ import { JwtStrategy, TokenStrategy } from './security/jwt.strategy';
 import { FileSizeValidationPipe } from './pipes/fileSizeValidation.pipe';
 import { Utility } from './utils/utility';
 import { GoogleStrategy } from './security/google.strategy';
+import { AccountController } from './controllers/account.controller';
+import { AccountService } from './services/account.service';
 
 @Module({
   imports: [
@@ -67,6 +69,7 @@ import { GoogleStrategy } from './security/google.strategy';
     AuthController,
     ProfileController,
     ApiKeyController,
+    AccountController,
   ],
   providers: [
     AuthService,
@@ -81,6 +84,7 @@ import { GoogleStrategy } from './security/google.strategy';
     FileSizeValidationPipe,
     ProfileService,
     ApiKeyService,
+    AccountService,
     Utility,
   ],
 })

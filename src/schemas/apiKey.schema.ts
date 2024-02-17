@@ -24,7 +24,7 @@ export class ApiKey {
     role: Role;
 
     @Prop({ default: true })
-    is_enabled: boolean;
+    is_enabled?: boolean;
 
 }
 

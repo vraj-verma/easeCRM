@@ -5,6 +5,7 @@ import {
     HttpException,
     HttpStatus,
     Param,
+    Patch,
     Post,
     Req,
     Res,
@@ -126,5 +127,37 @@ export class ApiKeyController {
             message: 'Apikey reset successfully.',
             response
         });
+    }
+
+    @Patch('switch-status')
+    async switchKeyAvailibility(
+        @Req() req: Request,
+        @Res() res: Response,
+    ) {
+
+        const authUser = <AuthUser>req.user;
+
+        const [apiKey] = await this.apiKeyService.getApiKeys(authUser.account_id);
+
+        if (!apiKey) {
+            throw new HttpException(
+                `Api key with account id: ${authUser.account_id}, does not exist`,
+                HttpStatus.NOT_FOUND
+            );
+        }
+
+        const response = await this.apiKeyService.switchKeyAvailibility(authUser.account_id);
+        if (!response) {
+            throw new HttpException(
+                `Failed to swtich api key status`,
+                HttpStatus.NOT_FOUND
+            );
+        }
+
+        res.status(201).json(
+            {
+                message: `Api key with key: ${apiKey['_id']} update successfully.`
+            }
+        );
     }
 }

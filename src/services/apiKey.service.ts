@@ -47,4 +47,46 @@ export class ApiKeyService {
         return response ? response : null;
     }
 
+    async updateApiKey(apiKey: ApiKey) {
+        const response = await this.apiKeyDB.updateOne(
+            {
+                account_id: apiKey.account_id
+            },
+            {
+                $set: {
+                    name: apiKey.name,
+                    role: apiKey.role
+                }
+            }
+        );
+
+        return response ? response.modifiedCount > 0 : false;
+    }
+
+    async switchKeyAvailibility(account_id: string) {
+        const response = await this.apiKeyDB.updateOne(
+            {
+                account_id
+            },
+            [
+                {
+                    $set: {
+                        is_enabled: {
+                            $switch: {
+                                branches: [
+                                    { case: { $eq: ["$is_enabled", true] }, then: false },
+                                    { case: { $eq: ["$is_enabled", false] }, then: true },
+                                ],
+                                default: true
+                            }
+                        }
+                    }
+                }
+            ]
+        );
+
+        return response ? response.modifiedCount > 0 : false;
+    }
+
+
 }
