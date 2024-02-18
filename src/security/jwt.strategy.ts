@@ -4,7 +4,8 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { UserService } from "../services/users.service";
 import { Strategy as customStrategy } from 'passport-custom';
 import { ApiKeyService } from "../services/apiKey.service";
-import { Role } from "src/types/authUser";
+import { Role } from "../types/authUser";
+import { AccountService } from "../services/account.service";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -36,17 +37,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
                );
           }
 
-          if (!user.account.status) {
+          if (user.account.status !== 'Active') {
                throw new HttpException(
                     `Unauthorized, Your account is not Active`,
-                    HttpStatus.BAD_REQUEST
+                    HttpStatus.UNAUTHORIZED
                );
           }
 
           if (!user.verified) {
                throw new HttpException(
                     `Unauthorized, Please verify your account first.`,
-                    HttpStatus.BAD_REQUEST
+                    HttpStatus.UNAUTHORIZED
                );
           }
 
@@ -59,6 +60,7 @@ export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
      constructor(
           private apiKeyService: ApiKeyService,
           private userService: UserService,
+          private accountService: AccountService,
      ) {
           super();
      }
@@ -82,19 +84,19 @@ export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
                );
           }
 
-          const user = await this.userService.getUserByAccountId(response['account_id']);
+          const user = await this.accountService.getAccountById(response['account_id']);
 
-          if (!user.verified) {
+          if (!user.result.verified) {
                throw new HttpException(
                     `Unauthorized, Please verify your account first.`,
-                    HttpStatus.BAD_REQUEST
+                    HttpStatus.UNAUTHORIZED
                );
           }
 
-          if (!user['account.status']) {
+          if (user.status !== 'Active') {
                throw new HttpException(
                     `Unauthorized, Your account is not Active`,
-                    HttpStatus.BAD_REQUEST
+                    HttpStatus.UNAUTHORIZED
                );
           }
 

@@ -8,22 +8,20 @@ export type AccountDocument = Account & Document;
 @Schema({ timestamps: true })
 export class Account {
 
-     account_id?: Types.ObjectId | string;
-
      @Prop({ default: Role.owner })
-     role: Role;
+     role?: Role;
 
      @Prop({ maxlength: 100 })
      bio?: string;
 
      @Prop({ default: Plan.free })
-     plan: Plan;
+     plan?: Plan;
 
      @Prop()
      avatar?: string;
 
      @Prop({ default: Status.active })
-     status: Status;
+     status?: Status;
 
      @Prop()
      address?: Address;

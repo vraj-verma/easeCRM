@@ -44,7 +44,7 @@ export class AuthController {
           @Res() res: Response,
           @Body(new ValidationPipe(JoiValidationSchema.signupSchema)) data: Signup,
      ) {
-          const isAccountExist = await this.userService.getUserByEmail(data.email);
+          const isAccountExist = await this.userService.getUserByEmailId(data.email);
 
           if (isAccountExist) {
                throw new HttpException(

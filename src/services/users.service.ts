@@ -58,7 +58,7 @@ export class UserService {
                          verified: true
                     }
                }
-          )
+          );
 
           return response ? response.modifiedCount > 0 : false;
      }
@@ -66,6 +66,12 @@ export class UserService {
      async getUserByAccountId(account_id: string) {
           const response = await this.userDB.findOne({ account_id }).lean();
           return response ? response : null;
+     }
+
+     // modified version
+     async getUserByEmailId(email: string): Promise<User> {
+          const response = await this.userDB.findOne({ email }).lean();
+          return response ? response as User : null
      }
 
 }
