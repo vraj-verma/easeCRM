@@ -40,6 +40,12 @@ export class UserService {
                               'account._id': 0,
                               'account.__v': 0,
                               'account.role': 0,
+                              "account.users_limit": 0,
+                              "account.users_used": 0,
+                              "account.createdAt": 0,
+                              "account.updatedAt": 0,
+                              "account.address": 0,
+                              "account.bio": 0,
                          },
                     },
                ]
@@ -66,6 +72,11 @@ export class UserService {
      async getUserByAccountId(account_id: string) {
           const response = await this.userDB.findOne({ account_id }).lean();
           return response ? response : null;
+     }
+
+     async deleteUsersByAccountId(account_id: string) {
+          const response = await this.userDB.deleteMany({ account_id });
+          return response ? response.deletedCount > 0 : false;
      }
 
      // modified version

@@ -95,5 +95,11 @@ export class ApiKeyService {
         return response ? response : false;
     }
 
+    // at time of account delete
+    async deleteKeyByAccountId(account_id: string) {
+        const response = await this.apiKeyDB.deleteMany({ account_id });
+        return response ? response.deletedCount > 0 : false;
+    }
+
 
 }

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { Account, AccountDocument } from "../schemas/account.schema";
 
 @Injectable()
@@ -19,6 +19,9 @@ export class AccountService {
           const response = await this.accountDB.aggregate(
                [
                     {
+                         $match: { _id: new Types.ObjectId(account_id) }
+                    },
+                    {
                          $lookup: {
                               from: "users",
                               localField: "_id",
@@ -33,7 +36,6 @@ export class AccountService {
                     },
                ]
           );
-
           return response ? response[0] : null;
      }
 
@@ -46,5 +48,10 @@ export class AccountService {
           );
 
           return response ? response.modifiedCount > 0 : false;
+     }
+
+     async deleteAccount(account_id: string) {
+          const response = await this.accountDB.deleteOne({ _id: account_id });
+          return response ? response.deletedCount > 0 : false;
      }
 }

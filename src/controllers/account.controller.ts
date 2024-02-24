@@ -1,6 +1,7 @@
 import {
      Body,
      Controller,
+     Delete,
      Get,
      HttpException,
      HttpStatus,
@@ -14,8 +15,11 @@ import { JwtAuthGuard } from "../security/jwt.guard";
 import { AccountService } from "../services/account.service";
 import { AuthUser, Role } from "../types/authUser";
 import { Account } from "../schemas/account.schema";
-import { ValidationPipe } from "src/pipes/validation.pipe";
-import { JoiValidationSchema } from "src/validations/schema.validation";
+import { ValidationPipe } from "../pipes/validation.pipe";
+import { JoiValidationSchema } from "../validations/schema.validation";
+import { UserService } from "../services/users.service";
+import { ApiKeyService } from "../services/apiKey.service";
+import { ProfileService } from "../services/profile.service";
 
 
 @UseGuards(JwtAuthGuard)
@@ -23,7 +27,10 @@ import { JoiValidationSchema } from "src/validations/schema.validation";
 export class AccountController {
 
      constructor(
-          private accountService: AccountService
+          private accountService: AccountService,
+          private userService: UserService,
+          private apiKeyService: ApiKeyService,
+          private profileService: ProfileService,
      ) { }
 
      @Get()
@@ -66,7 +73,7 @@ export class AccountController {
                throw new HttpException(
                     `Failed to update account`,
                     HttpStatus.BAD_REQUEST
-               )
+               );
           };
 
           res.status(201).json(
@@ -74,5 +81,37 @@ export class AccountController {
                     message: 'Account update successfully'
                }
           )
+     }
+
+     @Delete()
+     async deleteAccount(
+          @Req() req: Request,
+          @Res() res: Response,
+     ) {
+          const { account_id } = <AuthUser>req.user;
+
+          const response = await this.accountService.deleteAccount(account_id);
+
+          if (!response) {
+               throw new HttpException(
+                    `Failed to delete account`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
+
+          Promise.all([
+               this.userService.deleteUsersByAccountId(account_id),
+               this.apiKeyService.deleteKeyByAccountId(account_id),
+               this.profileService.deleteProfileByAccountId(account_id)
+          ])
+               .then(res => console.log('All associates docs deleted.'))
+               .catch(e => console.log('Failed to delete associates documents'))
+
+          res.status(200).json(
+               {
+                    account_id,
+                    message: `Account deleted successfully`
+               }
+          );
      }
 }

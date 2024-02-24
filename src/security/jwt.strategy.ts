@@ -75,18 +75,19 @@ export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
                );
           }
 
-          const response = await this.apiKeyService.getApiKeyByKey(apiKey)
+          const apiKeyResponse = await this.apiKeyService.getApiKeyByKey(apiKey)
 
-          if (!response) {
+          if (!apiKeyResponse) {
                throw new HttpException(
                     `Unauthorized`,
                     HttpStatus.UNAUTHORIZED
                );
           }
 
-          const user = await this.accountService.getAccountById(response['account_id']);
+            const user = await this.accountService.getAccountById(apiKeyResponse['account_id']);
+          console.log(user)
 
-          if (!user.result.verified) {
+          if (!user || !user.result.verified) {
                throw new HttpException(
                     `Unauthorized, Please verify your account first.`,
                     HttpStatus.UNAUTHORIZED
@@ -100,17 +101,17 @@ export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
                );
           }
 
-          if (response['role'] == Role.viewer) {
+          if (apiKeyResponse['role'] == Role.viewer) {
                throw new HttpException(
                     `Unauthorized, your current role does not allow to access.`,
                     HttpStatus.UNAUTHORIZED
                );
           }
 
-          if (!response) {
+          if (!apiKeyResponse) {
                throw new HttpException(`Unauthorized`, HttpStatus.UNAUTHORIZED);
           }
 
-          return { ...response, ...user };
+          return { ...apiKeyResponse, ...user };
      }
 }
