@@ -16,7 +16,9 @@ import { JwtAuthGuard } from "../security/jwt.guard";
 import { uploadOnCloudinary } from "../utils/cloudinary";
 import { ProfileService } from "../services/profile.service";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+@ApiTags('Profile Controller')
 @UseGuards(JwtAuthGuard)
 @Controller('profile')
 export class ProfileController {
@@ -24,6 +26,8 @@ export class ProfileController {
           private profileService: ProfileService
      ) { }
 
+     @ApiOperation({ summary: 'Upload avatar' })
+     @ApiResponse({ type: 'string' })
      @Post('avatar')
      @UseInterceptors(
           FileFieldsInterceptor(

@@ -11,22 +11,25 @@ import {
      UseGuards
 } from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
-// import { User } from "../types/user";
 import { Plan } from "../types/account";
 import { JwtService } from "@nestjs/jwt";
 import { Signin } from "../types/signin";
 import { Signup } from "../types/signup";
 import { Request, Response } from "express";
+import { AuthUser } from './../types/authUser';
+import { User as UserType } from '../types/user'
+import { Role, Status } from "../types/authUser";
 import { AuthService } from "../services/auth.service";
 import { UserService } from "../services/users.service";
 import { ValidationPipe } from "../pipes/validation.pipe";
-import { AuthUser, Role, Status } from "../types/authUser";
+import { GoogleOAuthGuard } from "../security/google.guard";
+import { ApiExcludeEndpoint, ApiOAuth2, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ProfileService } from "../services/profile.service";
 import { MailService } from "../mails/mail-template.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
-import { GoogleOAuthGuard } from "../security/google.guard";
-import { ProfileService } from "../services/profile.service";
-import { User as UserType } from '../types/user'
+import { User } from "../schemas/users.schema";
 
+@ApiTags('Auth Controller')
 @Controller('auth')
 export class AuthController {
 
@@ -38,12 +41,14 @@ export class AuthController {
           private profileService: ProfileService
      ) { }
 
+     @ApiOperation({ summary: 'Create an account' })
+     @ApiResponse({ type: AuthUser })
      @Post('signup')
      async signup(
           @Req() req: Request,
           @Res() res: Response,
           @Body(new ValidationPipe(JoiValidationSchema.signupSchema)) data: Signup,
-     ) {
+     ): Promise<AuthUser | any> {
           const isAccountExist = await this.userService.getUserByEmailId(data.email);
 
           if (isAccountExist) {
@@ -118,6 +123,8 @@ export class AuthController {
                .json(authUser);
      }
 
+     @ApiOperation({ summary: 'Signin to account & get JWT token' })
+     @ApiResponse({ type: User })
      @Post('signin')
      async signin(
           @Req() req: Request,
@@ -180,7 +187,8 @@ export class AuthController {
                );
      }
 
-
+     @ApiOperation({ summary: 'Verify account & access account' })
+     @ApiResponse({ type: 'string' })
      @Get('verifyAccount')
      async verifyAccount(
           @Req() req: Request,
@@ -236,10 +244,13 @@ export class AuthController {
           );
      }
 
+     @ApiOperation({ summary: 'Signin with Google' })
+     @ApiResponse({ type: 'string' })
      @Get('google')
      @UseGuards(GoogleOAuthGuard)
      async googleAuth() { }
 
+     @ApiExcludeEndpoint()
      @Get('google-redirect')
      @UseGuards(GoogleOAuthGuard)
      async googleAuthRedirect(

@@ -20,8 +20,9 @@ import { JoiValidationSchema } from "../validations/schema.validation";
 import { UserService } from "../services/users.service";
 import { ApiKeyService } from "../services/apiKey.service";
 import { ProfileService } from "../services/profile.service";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-
+@ApiTags('Account Controller')
 @UseGuards(JwtAuthGuard)
 @Controller('account')
 export class AccountController {
@@ -33,6 +34,8 @@ export class AccountController {
           private profileService: ProfileService,
      ) { }
 
+     @ApiOperation({ summary: 'Get an Account' })
+     @ApiResponse({ type: Account })
      @Get()
      async getAccount(
           @Req() req: Request,
@@ -53,6 +56,8 @@ export class AccountController {
           res.status(200).json(response);
      }
 
+     @ApiOperation({ summary: 'Update an Account' })
+     @ApiResponse({ type: 'string' })
      @Put()
      async updateAccount(
           @Req() req: Request,
@@ -83,6 +88,8 @@ export class AccountController {
           )
      }
 
+     @ApiOperation({ summary: 'Delete an Account' })
+     @ApiResponse({ type: 'string' })
      @Delete()
      async deleteAccount(
           @Req() req: Request,
@@ -104,8 +111,8 @@ export class AccountController {
                this.apiKeyService.deleteKeyByAccountId(account_id),
                this.profileService.deleteProfileByAccountId(account_id)
           ])
-               .then(res => console.log('All associates docs deleted.'))
-               .catch(e => console.log('Failed to delete associates documents'))
+               .then(() => console.log('All associates docs deleted.'))
+               .catch(e => console.log('Failed to delete associates documents', e))
 
           res.status(200).json(
                {

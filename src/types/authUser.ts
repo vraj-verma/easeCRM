@@ -1,4 +1,4 @@
-export type AuthUser = {
+export class AuthUser  {
      _id: string;
      account_id: string;
      email: string;
@@ -8,7 +8,7 @@ export type AuthUser = {
      users_used: number;
      users_limit: number;
      avatar?: string;
-     verify?: boolean;
+     verified?: boolean;
      token?: string;
 }
 

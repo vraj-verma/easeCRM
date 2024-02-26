@@ -19,7 +19,9 @@ import { ApiKeyService } from "../services/apiKey.service";
 import { JwtAuthGuard } from "../security/jwt.guard";
 import { AuthUser } from "../types/authUser";
 import { Utility } from "src/utils/utility";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+@ApiTags('ApiKey Controller')
 @UseGuards(JwtAuthGuard)
 @Controller('apikey')
 export class ApiKeyController {
@@ -29,6 +31,8 @@ export class ApiKeyController {
         private utility: Utility,
     ) { }
 
+    @ApiOperation({ summary: 'Create an API KEY' })
+    @ApiResponse({ type: ApiKey })
     @Post()
     async createApiKey(
         @Req() req: Request,
@@ -62,6 +66,8 @@ export class ApiKeyController {
         res.status(201).json(response);
     }
 
+    @ApiOperation({ summary: 'Get ApiKeys' })
+    @ApiResponse({ type: [ApiKey] })
     @Get()
     async getApiKeys(
         @Req() req: Request,
@@ -82,6 +88,8 @@ export class ApiKeyController {
         res.status(200).json(response);
     }
 
+    @ApiOperation({ summary: 'Get ApiKey by Key' })
+    @ApiResponse({ type: ApiKey })
     @Get('/:apikey')
     async getApiKeyByKey(
         @Req() req: Request,
@@ -102,6 +110,9 @@ export class ApiKeyController {
 
     }
 
+
+    @ApiOperation({ summary: 'Reset ApiKey' })
+    @ApiResponse({ type: 'string' })
     @Get('reset')
     async resetApiKey(
         @Req() req: Request,
@@ -131,6 +142,8 @@ export class ApiKeyController {
         });
     }
 
+    @ApiOperation({ summary: 'Toggle ApiKey Status' })
+    @ApiResponse({ type: 'string' })
     @Patch('switch-status')
     async switchKeyAvailibility(
         @Req() req: Request,
@@ -165,6 +178,8 @@ export class ApiKeyController {
         );
     }
 
+    @ApiOperation({ summary: 'Delete an ApiKey(s)' })
+    @ApiResponse({ type: 'String' })
     @Delete()
     async deleteApiKeys(
         @Req() req: Request,

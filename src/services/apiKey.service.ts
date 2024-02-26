@@ -12,27 +12,27 @@ export class ApiKeyService {
         private utility: Utility,
     ) { }
 
-    async createApiKey(apiKey: ApiKey) {
+    async createApiKey(apiKey: ApiKey): Promise<ApiKey> {
         const response = await this.apiKeyDB.create(apiKey);
-        return response ? response : null;
+        return response ? response as unknown as ApiKey : null;
     }
 
-    async getApiKeys(account_id: string) {
+    async getApiKeys(account_id: string): Promise<ApiKey[]> {
         const response = await this.apiKeyDB.find(
             {
                 account_id: account_id
             }
         );
 
-        return response ? response : null;
+        return response ? response as unknown as ApiKey[] : null;
     }
 
-    async getApiKeyByKey(apiKey: string) {
+    async getApiKeyByKey(apiKey: string): Promise<ApiKey> {
         const response = await this.apiKeyDB.findOne({ apiKey }).lean();
-        return response ? response : null;
+        return response ? response as unknown as ApiKey : null;
     }
 
-    async resetApiKey(apiKey: string) {
+    async resetApiKey(apiKey: string): Promise<Boolean> {
         const newKey = this.utility.randomNumber();
         const response = await this.apiKeyDB.updateOne(
             {
@@ -45,7 +45,7 @@ export class ApiKeyService {
             }
         );
 
-        return response ? response : null;
+        return response ? response.modifiedCount > 0 : false;
     }
 
     async updateApiKey(apiKey: ApiKey) {

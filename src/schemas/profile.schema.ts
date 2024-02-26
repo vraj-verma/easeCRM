@@ -4,20 +4,24 @@ import {
      Schema,
      SchemaFactory
 } from "@nestjs/mongoose";
+import { ApiProperty } from "@nestjs/swagger";
 
 export type ProfileDocument = Profile & Document;
 
 @Schema({ timestamps: true })
 export class Profile {
 
+     @ApiProperty({ required: false })
      @Prop()
-     user_id: string;
+     user_id?: string;
 
+     @ApiProperty({ required: false })
      @Prop()
      email?: string;
 
+     @ApiProperty({ required: true })
      @Prop()
-     avatar?: string;
+     avatar: string;
 
 }
 
