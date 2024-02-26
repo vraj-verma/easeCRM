@@ -28,6 +28,7 @@ import { Utility } from './utils/utility';
 import { GoogleStrategy } from './security/google.strategy';
 import { AccountController } from './controllers/account.controller';
 import { AccountService } from './services/account.service';
+import { UserController } from './controllers/user.controller';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { AccountService } from './services/account.service';
     ProfileController,
     ApiKeyController,
     AccountController,
+    UserController,
   ],
   providers: [
     AuthService,
