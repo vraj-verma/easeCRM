@@ -85,4 +85,17 @@ export class UserService {
           return response ? response as User : null
      }
 
+     async updatePassword(user_id: string, password: string): Promise<boolean> {
+          const filter = { _id: user_id }
+          const response = await this.userDB.updateOne(filter,
+               {
+                    $set: {
+                         password
+                    }
+               }
+          );
+
+          return response ? response.modifiedCount > 0 : false;
+     }
+
 }
