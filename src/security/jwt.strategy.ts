@@ -101,7 +101,7 @@ export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
                );
           }
 
-          if (apiKeyResponse['role'] == Role.viewer) {
+          if (apiKeyResponse['role'] == Role.Viewer) {
                throw new HttpException(
                     `Unauthorized, your current role does not allow to access.`,
                     HttpStatus.UNAUTHORIZED

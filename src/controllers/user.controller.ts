@@ -13,14 +13,17 @@ import * as bcrypt from 'bcrypt';
 import { User } from "../types/user";
 import { JwtService } from "@nestjs/jwt";
 import { Request, Response } from "express";
-import { AuthUser } from "../types/authUser";
+import { AuthUser, Role } from "../types/authUser";
 import { joinUser } from "../types/changePassword";
+import { MyRoles } from "../security/roles.decorator";
+import { RolesGuard } from "../security/roles.guard";
 import { JwtAuthGuard } from "../security/jwt.guard";
 import { UserService } from "../services/users.service";
 import { ValidationPipe } from "../pipes/validation.pipe";
 import { MailService } from "../mails/mail-template.service";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JoiValidationSchema } from "../validations/schema.validation";
+
 
 @ApiTags('User Controller')
 @Controller('user')
@@ -37,7 +40,8 @@ export class UserController {
 
      @ApiOperation({ summary: 'Invite a new user via email' })
      @ApiResponse({ type: 'string' })
-     @UseGuards(JwtAuthGuard)
+     @UseGuards(JwtAuthGuard, RolesGuard)
+     @MyRoles(Role.Owner, Role.Admin)
      @Post('invite')
      async createUser(
           @Req() req: Request,
@@ -45,6 +49,13 @@ export class UserController {
           @Body(new ValidationPipe(JoiValidationSchema.inviteUserSchema)) user: User
      ) {
           const { account_id, name } = <AuthUser>req.user;
+
+          if (user.role === Role.Owner) {
+               throw new HttpException(
+                    `Only one Owner can be exist in an account, please assign other role: ['Admin', 'Viewer]`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
 
           const isAlreadyExist = await this.userService.getUserByEmailId(user.email);
           if (isAlreadyExist) {
@@ -78,7 +89,7 @@ export class UserController {
                token
           }
 
-          await this.mailService.sendInviteEmail(inviteObj);
+          this.mailService.sendInviteEmail(inviteObj);
 
           res.status(201).json(
                {

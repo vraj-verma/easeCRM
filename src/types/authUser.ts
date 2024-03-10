@@ -18,7 +18,7 @@ export enum Status {
 }
 
 export enum Role {
-     owner = 'Owner',
-     admin = 'Admin',
-     viewer = 'Viewer'
+     Owner = 'Owner',
+     Admin = 'Admin',
+     Viewer = 'Viewer'
 }

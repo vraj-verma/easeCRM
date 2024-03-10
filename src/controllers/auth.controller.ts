@@ -61,7 +61,7 @@ export class AuthController {
           const accountInitalData = {
                email: data.email,
                name: data.name,
-               role: Role.owner,
+               role: Role.Owner,
                plan: Plan.free,
                users_used: 1,
                users_limit: 2,
@@ -76,7 +76,7 @@ export class AuthController {
                account_id: account_id,
                email: data.email,
                name: data.name ? data.name : 'John Doe',
-               role: Role.owner,
+               role: Role.Owner,
                password: data.password,
                verified: false,
           }
@@ -94,7 +94,7 @@ export class AuthController {
                account_id,
                _id: user.user_id,
                email: data.email,
-               role: Role.owner,
+               role: Role.Owner,
                status: Status.active,
                name: data.name,
                users_limit: 1,
@@ -288,7 +288,7 @@ export class AuthController {
                const accountInitalData = {
                     email: user['email'],
                     name: user['name'],
-                    role: Role.owner,
+                    role: Role.Owner,
                     plan: Plan.free,
                     users_used: 1,
                     users_limit: 2,
@@ -306,7 +306,7 @@ export class AuthController {
                     account_id: response['_id'],
                     email: user['email'],
                     name: user['name'] ? user['name'] : 'John Doe',
-                    role: Role.owner,
+                    role: Role.Owner,
                     password: '',
                     verified: false,
                     oAuth: true
@@ -340,7 +340,7 @@ export class AuthController {
                     account_id: response['account_id'],
                     _id: creatUser._id,
                     email: user['email'],
-                    role: Role.owner,
+                    role: Role.Owner,
                     status: Status.active,
                     name: user['name'],
                     users_limit: 1,

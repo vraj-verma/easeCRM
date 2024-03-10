@@ -66,7 +66,7 @@ export class AccountController {
      ) {
           const { account_id, role } = <AuthUser>req.user;
 
-          if (!role.includes(Role.owner) && !role.includes(Role.admin)) {
+          if (!role.includes(Role.Owner) && !role.includes(Role.Admin)) {
                throw new HttpException(
                     `Your current role: ${role}, does not allow access to this.`,
                     HttpStatus.UNAUTHORIZED

@@ -10,7 +10,7 @@ export type AccountDocument = Account & Document;
 export class Account {
 
      @ApiProperty({ required: false })
-     @Prop({ default: Role.owner })
+     @Prop({ default: Role.Owner })
      role?: Role;
 
      @ApiProperty({ required: false })
