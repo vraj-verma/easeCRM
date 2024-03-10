@@ -28,9 +28,6 @@ import { JoiValidationSchema } from "../validations/schema.validation";
 @ApiTags('User Controller')
 @Controller('user')
 export class UserController {
-     // create and send invite to join over email -- 
-     // assign role while creating the user -- done
-     // user take the token and set up the password -- done
 
      constructor(
           private userService: UserService,

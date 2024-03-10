@@ -24,11 +24,13 @@ import { ApiKeyController } from './controllers/apiKey.controller';
 import { ProfileController } from './controllers/profile.controller';
 import { JwtStrategy, TokenStrategy } from './security/jwt.strategy';
 import { FileSizeValidationPipe } from './pipes/fileSizeValidation.pipe';
-import { Utility } from './utils/utility';
 import { GoogleStrategy } from './security/google.strategy';
 import { AccountController } from './controllers/account.controller';
 import { AccountService } from './services/account.service';
 import { UserController } from './controllers/user.controller';
+import { Utility } from './utils/utility';
+import { ContactController } from './controllers/contact.scontroller';
+import { ContactService } from './services/contact.service';
 
 @Module({
   imports: [
@@ -72,6 +74,7 @@ import { UserController } from './controllers/user.controller';
     ApiKeyController,
     AccountController,
     UserController,
+    ContactController,
   ],
   providers: [
     AuthService,
@@ -85,6 +88,7 @@ import { UserController } from './controllers/user.controller';
     EmailProcessor,
     FileSizeValidationPipe,
     ProfileService,
+    ContactService,
     ApiKeyService,
     AccountService,
     Utility,

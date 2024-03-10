@@ -1,8 +1,9 @@
 import { Logs, LogsSchema } from "../schemas/logs.schema";
 import { User, UserSchema } from "../schemas/users.schema";
+import { ApiKey, ApiKeySchema } from "../schemas/apiKey.schema";
 import { Account, AccountSchema } from "../schemas/account.schema";
 import { Profile, ProfileSchema } from "../schemas/profile.schema";
-import { ApiKey, ApiKeySchema } from "../schemas/apiKey.schema";
+import { Contact, ContactSchema } from "../schemas/contact.schema";
 
 export const Schemas = [
      {
@@ -19,5 +20,8 @@ export const Schemas = [
      },
      {
           name: ApiKey.name, schema: ApiKeySchema
+     },
+     {
+          name: Contact.name, schema: ContactSchema
      }
 ]

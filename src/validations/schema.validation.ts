@@ -24,4 +24,17 @@ export class JoiValidationSchema {
           password: joi.string().min(6).max(200).required(),
           confirmPassword: joi.string().min(6).max(200).required()
      });
+
+     static createContactSchema = joi.object({
+          user_id: joi.string().optional().allow(null, ''),
+          name: joi.string().min(2).max(20).required(),
+          email: joi.string().email().required(),
+          phone: joi.string().min(10).max(10).required(),
+          company: joi.string().min(2).max(20).optional().allow(null, ''),
+          followup: joi.string().optional().allow(null, ''),
+          source: joi.string().optional().allow(null, ''),
+          hotness: joi.number().optional().allow(null, ''),
+          tags: joi.array().items(joi.string().optional().allow(null, '')).optional().allow(null, ''),
+          custom_fields: joi.array().items(joi.object().optional().allow(null, '')).optional().allow(null, ''),
+     });
 }
