@@ -9,29 +9,34 @@ import {
      Res,
      UseGuards
 } from "@nestjs/common";
+import * as bcrypt from 'bcrypt';
 import { User } from "../types/user";
 import { JwtService } from "@nestjs/jwt";
-import { AuthUser } from "../types/authUser";
 import { Request, Response } from "express";
+import { AuthUser } from "../types/authUser";
+import { joinUser } from "../types/changePassword";
 import { JwtAuthGuard } from "../security/jwt.guard";
 import { UserService } from "../services/users.service";
 import { ValidationPipe } from "../pipes/validation.pipe";
+import { MailService } from "../mails/mail-template.service";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JoiValidationSchema } from "../validations/schema.validation";
-import { joinUser } from "src/types/changePassword";
-import * as bcrypt from 'bcrypt';
 
-
+@ApiTags('User Controller')
 @Controller('user')
 export class UserController {
      // create and send invite to join over email -- 
      // assign role while creating the user -- done
-     // user take the token and set up the password --
+     // user take the token and set up the password -- done
 
      constructor(
           private userService: UserService,
           private jwtService: JwtService,
+          private mailService: MailService,
      ) { }
 
+     @ApiOperation({ summary: 'Invite a new user via email' })
+     @ApiResponse({ type: 'string' })
      @UseGuards(JwtAuthGuard)
      @Post('invite')
      async createUser(
@@ -39,7 +44,7 @@ export class UserController {
           @Res() res: Response,
           @Body(new ValidationPipe(JoiValidationSchema.inviteUserSchema)) user: User
      ) {
-          const { account_id } = <AuthUser>req.user;
+          const { account_id, name } = <AuthUser>req.user;
 
           const isAlreadyExist = await this.userService.getUserByEmailId(user.email);
           if (isAlreadyExist) {
@@ -66,15 +71,26 @@ export class UserController {
 
           const token = this.jwtService.sign(payload);
 
+          const inviteObj = {
+               name,
+               invited_username: user.name,
+               email: user.email,
+               token
+          }
+
+          await this.mailService.sendInviteEmail(inviteObj);
+
           res.status(201).json(
                {
-                    message: `User invitation send to email: ${user.email}`,
+                    message: `User invitation sent to email: ${user.email}`,
                     token
                }
           );
 
      }
 
+     @ApiOperation({ summary: 'Join & Set password' })
+     @ApiResponse({ type: 'string' })
      @Post('join/:token')
      async joinUser(
           @Req() req: Request,

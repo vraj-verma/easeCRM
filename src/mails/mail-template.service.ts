@@ -10,9 +10,13 @@ export class MailService {
      ) { }
 
      async sendWelcomeEmail(user: any) {
-
           // adding email task into Queue to sending email after 5 sec of delay after signup
           const job = await this.emailQueue.add('welcome', user, { delay: 5000 });
+          return { jobId: job.id };
+     }
+
+     async sendInviteEmail(user: any) {
+          const job = await this.emailQueue.add('invite', user, { delay: 5000 });
           return { jobId: job.id };
      }
 }
