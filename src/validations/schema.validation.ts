@@ -26,11 +26,11 @@ export class JoiValidationSchema {
      });
 
      static createContactSchema = joi.object({
-          user_id: joi.string().optional().allow(null, ''),
+          _id: joi.string().optional().allow(null, ''),
           name: joi.string().min(2).max(20).required(),
           email: joi.string().email().required(),
           phone: joi.string().min(10).max(10).required(),
-          company: joi.string().min(2).max(20).optional().allow(null, ''),
+          company: joi.string().min(2).optional().allow(null, ''),
           followup: joi.string().optional().allow(null, ''),
           source: joi.string().optional().allow(null, ''),
           hotness: joi.number().optional().allow(null, ''),

@@ -73,7 +73,7 @@ export class UserController {
           }
 
           const payload = {
-               user_id: response._id,
+               _id: response._id,
                email: user.email
           }
 
@@ -148,7 +148,7 @@ export class UserController {
 
           const hash = await bcrypt.hash(joinUser.password, 5);
 
-          const setPassword = await this.userService.updatePassword(decodedToken.user_id, hash);
+          const setPassword = await this.userService.updatePassword(decodedToken._id, hash);
 
           if (!setPassword) {
                throw new HttpException(

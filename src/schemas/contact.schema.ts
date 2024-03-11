@@ -7,8 +7,13 @@ export type ContactDocument = Contact & Document;
 @Schema({ timestamps: true })
 export class Contact {
 
+     @ApiProperty({ required: false })
      @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
      user_id: string | Types.ObjectId
+
+     @ApiProperty({ required: false })
+     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Account' })
+     account_id: Types.ObjectId | string;
 
      @ApiProperty({ required: true })
      @Prop()
@@ -38,11 +43,11 @@ export class Contact {
      @Prop({ default: 1 })
      hotness?: number;
 
-     @ApiProperty({ required: false })
+     @ApiProperty({ required: false, type: ['string'] })
      @Prop()
      tags?: string[];
 
-     @ApiProperty({ required: false })
+     @ApiProperty({ required: false, default: [] })
      @Prop()
      custom_field?: Object[];
 }

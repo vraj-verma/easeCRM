@@ -13,7 +13,7 @@ export class Profile {
 
      @ApiProperty({ required: false })
      @Prop()
-     user_id?: string;
+     _id?: string;
 
      @ApiProperty({ required: false })
      @Prop()

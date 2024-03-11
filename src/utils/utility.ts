@@ -10,4 +10,6 @@ export class Utility {
           const nanoid = customAlphabet(this.character, 15);
           return nanoid();
      }
+
+     testingEmails = ['sumitverma28004@gmail.com', 'vermavraj77@gmail.com', 'sumitvermamcale2023@bpibs.in'];
 }

@@ -64,7 +64,7 @@ export class ProfileController {
           }
 
           const profile = {
-               user_id: authUser._id,
+               _id: authUser._id,
                email: authUser.email,
                avatar: avatarUrl
           }

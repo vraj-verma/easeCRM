@@ -1,4 +1,4 @@
-export class AuthUser  {
+export class AuthUser {
      _id: string;
      account_id: string;
      email: string;

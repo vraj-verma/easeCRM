@@ -85,8 +85,8 @@ export class UserService {
           return response ? response as User : null
      }
 
-     async updatePassword(user_id: string, password: string): Promise<boolean> {
-          const filter = { _id: user_id }
+     async updatePassword(_id: string, password: string): Promise<boolean> {
+          const filter = { _id: _id }
           const response = await this.userDB.updateOne(filter,
                {
                     $set: {

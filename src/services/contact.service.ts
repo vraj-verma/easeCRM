@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { Contact, ContactDocument } from "src/schemas/contact.schema";
-import { Paged } from "src/types/pagination";
+import { Contact, ContactDocument } from "../schemas/contact.schema";
+import { Paged } from "../types/pagination";
 
 @Injectable()
 export class ContactService {
@@ -15,27 +15,34 @@ export class ContactService {
           return response ? response : null;
      }
 
-     async getContactById(contact_id: string): Promise<Contact> {
-          const filter = { _id: contact_id };
+     async getContactById(user_id: string, contact_id: string): Promise<Contact> {
+          const filter = { _id: contact_id, user_id };
+          const response = await this.contactDB.findOne(filter, { __v: 0 }).lean();
+          return response ? response : null;
+     }
+
+     async getContactByEmail(contact: Contact): Promise<Contact> {
+          const filter = { user_id: contact.user_id, email: contact.email }
           const response = await this.contactDB.findOne(filter).lean();
           return response ? response : null;
      }
 
-     async getContactByEmail(email: string): Promise<Contact> {
-          const response = await this.contactDB.findOne({ email }).lean();
+     async getContactByEmailAndAccountId(contact: Contact): Promise<Contact> {
+          const filter = { account_id: contact.account_id, email: contact.email }
+          const response = await this.contactDB.findOne(filter).lean();
           return response ? response : null;
      }
 
-     async getContacts(user_id: string, paged: Paged): Promise<Contact[]> {
-          const response = await this.contactDB.find({ user_id })
+     async getContacts(_id: string, paged: Paged): Promise<Contact[]> {
+          const response = await this.contactDB.find({ _id })
                .skip(paged.offset)
                .limit(paged.limit)
                .lean();
           return response ? response as unknown as Contact[] : null;
      }
 
-     async deleteContacts(contact_id: any): Promise<number> {
-          const filter = { _id: contact_id };
+     async deleteContacts(contact_id: any, user_id: string): Promise<number> {
+          const filter = { _id: contact_id, user_id };
           const response = await this.contactDB.deleteMany(filter);
           return response ? response.deletedCount : 0;
      }

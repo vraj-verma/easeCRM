@@ -28,6 +28,7 @@ import { ProfileService } from "../services/profile.service";
 import { MailService } from "../mails/mail-template.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
 import { User } from "../schemas/users.schema";
+import { Utility } from "../utils/utility";
 
 @ApiTags('Auth Controller')
 @Controller('auth')
@@ -38,7 +39,8 @@ export class AuthController {
           private userService: UserService,
           private mailService: MailService,
           private jwtService: JwtService,
-          private profileService: ProfileService
+          private profileService: ProfileService,
+          private utility: Utility
      ) { }
 
      @ApiOperation({ summary: 'Create an account' })
@@ -84,7 +86,7 @@ export class AuthController {
           const user = await this.userService.createUser(userData);
 
           const payload = {
-               user_id: user._id,
+               _id: user._id,
                email: data.email
           }
 
@@ -92,7 +94,7 @@ export class AuthController {
 
           const authUser: AuthUser = {
                account_id,
-               _id: user.user_id,
+               _id: user._id,
                email: data.email,
                role: Role.Owner,
                status: Status.active,
@@ -109,7 +111,7 @@ export class AuthController {
                );
           }
 
-          const testEmails = ['sumitverma28004@gmail.com', 'vermavraj77@gmail.com', 'sumitvermamcale2023@bpibs.in'];
+          const testEmails = this.utility.testingEmails;
 
           if (!testEmails.includes(data.email)) {
                this.mailService.sendWelcomeEmail(userData);
@@ -164,7 +166,7 @@ export class AuthController {
           }
 
           const payload = {
-               user_id: user._id,
+               _id: user._id,
                email: user.email
           }
 
@@ -189,12 +191,13 @@ export class AuthController {
 
      @ApiOperation({ summary: 'Verify account & access account' })
      @ApiResponse({ type: 'string' })
-     @Get('verifyAccount')
+     @Get('verify-account')
      async verifyAccount(
           @Req() req: Request,
           @Res() res: Response,
           @Query('token') token: string
      ) {
+
           if (!token) {
                throw new HttpException(
                     `Token should not be empty!`,
@@ -265,7 +268,7 @@ export class AuthController {
           if (isUserExist) {
 
                const payload = {
-                    user_id: isUserExist._id,
+                    _id: isUserExist._id,
                     email: user['email']
                }
 
@@ -315,7 +318,7 @@ export class AuthController {
                const creatUser = await this.userService.createUser(userData)
 
                const payload = {
-                    user_id: creatUser._id,
+                    _id: creatUser._id,
                     email: user['email']
                }
 
@@ -329,7 +332,7 @@ export class AuthController {
 
                // save avatar only in google OAuth case
                const profileInfo = {
-                    user_id: creatUser._id,
+                    _id: creatUser._id,
                     email: user['email'],
                     avatar: user['avatar']
                }
