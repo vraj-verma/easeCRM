@@ -14,18 +14,19 @@ import {
      Res,
      UseGuards
 } from "@nestjs/common";
+import mongoose from "mongoose";
 import { Request, Response } from "express";
 import { AuthUser } from "../types/authUser";
 import { Paged, } from '../types/pagination';
 import { Contact } from "../schemas/contact.schema";
 import { JwtAuthGuard } from "../security/jwt.guard";
 import { RolesGuard } from "../security/roles.guard";
+import { AssignContact } from "../types/assignContact";
 import { ValidationPipe } from "../pipes/validation.pipe";
 import { ContactService } from "../services/contact.service";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JoiValidationSchema } from "../validations/schema.validation";
-import mongoose from "mongoose";
-import { MongoIdPipe } from "src/pipes/mongo-id.validation.pipe";
+import { UserService } from "../services/users.service";
 
 @ApiTags('Contact Controller')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -33,7 +34,8 @@ import { MongoIdPipe } from "src/pipes/mongo-id.validation.pipe";
 export class ContactController {
 
      constructor(
-          private contactService: ContactService
+          private contactService: ContactService,
+          private userService: UserService,
      ) { }
 
      @ApiOperation({ summary: 'Create contact' })
@@ -81,10 +83,10 @@ export class ContactController {
           const { _id } = <AuthUser>req.user;
 
           const response = await this.contactService.getContacts(_id, paged);
-          if (!response) {
+          if (!response || response.length < 1) {
                throw new HttpException(
                     `No Contacts found`,
-                    HttpStatus.BAD_REQUEST
+                    HttpStatus.NOT_FOUND
                );
           }
 
@@ -250,5 +252,40 @@ export class ContactController {
                     message: `Contact with id(s): ${contact_ids} deleted successfully.`
                }
           )
+     }
+
+     @ApiOperation({ summary: 'Assign contact to someone in your team' })
+     @ApiResponse({ type: 'string' })
+     @Patch('assign')
+     async assignContacts(
+          @Req() req: Request,
+          @Res() res: Response,
+          @Body(new ValidationPipe(JoiValidationSchema.assignContactSchema)) payload: AssignContact,
+     ) {
+
+          const { _id, account_id } = <AuthUser>req.user;
+
+          const isUserExists = await this.userService.getUserByUserId(payload.user_id, account_id);
+          if (!isUserExists) {
+               throw new HttpException(
+                    `No user exist with user id: ${payload.user_id}`,
+                    HttpStatus.NOT_FOUND
+               );
+          }
+
+          for (let contact_id of payload.contactIds) {
+               const isContactExist = await this.contactService.getContactById(_id, contact_id);
+               if (!isContactExist) {
+                    throw new HttpException(
+                         `No contact exist with contact id: ${contact_id}`,
+                         HttpStatus.NOT_FOUND
+                    );
+               }
+          }
+
+          // const response = await this.contactService.assignContactToOtherUser(payload)
+
+          // to be complete later
+
      }
 }

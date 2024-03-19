@@ -37,4 +37,10 @@ export class JoiValidationSchema {
           tags: joi.array().items(joi.string().optional().allow(null, '')).optional().allow(null, ''),
           custom_fields: joi.array().items(joi.object().optional().allow(null, '')).optional().allow(null, ''),
      });
+
+     static assignContactSchema = joi.object({
+          user_id: joi.string().min(2).max(20).required(),
+          contact_id: joi.array().items(joi.string().required()).required(),
+          message: joi.string().optional().allow(null, '')
+     });
 }

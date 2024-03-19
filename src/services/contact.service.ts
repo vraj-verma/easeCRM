@@ -3,6 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Contact, ContactDocument } from "../schemas/contact.schema";
 import { Paged } from "../types/pagination";
+import { AssignContact } from "src/types/assignContact";
 
 @Injectable()
 export class ContactService {
@@ -33,11 +34,12 @@ export class ContactService {
           return response ? response : null;
      }
 
-     async getContacts(_id: string, paged: Paged): Promise<Contact[]> {
-          const response = await this.contactDB.find({ _id })
+     async getContacts(user_id: string, paged: Paged): Promise<Contact[]> {
+          const response = await this.contactDB.find({ user_id })
                .skip(paged.offset)
                .limit(paged.limit)
                .lean();
+
           return response ? response as unknown as Contact[] : null;
      }
 
@@ -62,4 +64,8 @@ export class ContactService {
           });
           return response ? response.modifiedCount > 0 : false;
      }
+
+     // async assignContactToOtherUser(payload: AssignContact) {
+     //      const filter = { _id: payload.contactIds }
+     // }
 }

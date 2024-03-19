@@ -74,6 +74,12 @@ export class UserService {
           return response ? response : null;
      }
 
+     async getUserByUserId(user_id: string, account_id: string) {
+          const filter = { _id: user_id, account_id };
+          const response = await this.userDB.findById(filter, { __v: 0 }).lean();
+          return response ? response : null;
+     }
+
      async deleteUsersByAccountId(account_id: string) {
           const response = await this.userDB.deleteMany({ account_id });
           return response ? response.deletedCount > 0 : false;
@@ -97,5 +103,6 @@ export class UserService {
 
           return response ? response.modifiedCount > 0 : false;
      }
+
 
 }
