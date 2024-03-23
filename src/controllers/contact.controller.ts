@@ -139,6 +139,14 @@ export class ContactController {
           const { account_id } = <AuthUser>req.user;
 
           const isUserExists = await this.userService.getUserByUserId(payload.user_id, account_id);
+
+          if (account_id !== isUserExists.account_id) {
+               throw new HttpException(
+                    `User must be exist in same account`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
+
           if (!isUserExists) {
                throw new HttpException(
                     `No user exist with user id: ${payload.user_id}`,
