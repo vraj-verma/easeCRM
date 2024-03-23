@@ -59,7 +59,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
      constructor(
           private apiKeyService: ApiKeyService,
-          private userService: UserService,
           private accountService: AccountService,
      ) {
           super();
@@ -84,8 +83,14 @@ export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
                );
           }
 
-            const user = await this.accountService.getAccountById(apiKeyResponse['account_id']);
-          console.log(user)
+          if (!apiKeyResponse.is_enabled) {
+               throw new HttpException(
+                    `Unauthorized, API key: ${apiKey} is not active`,
+                    HttpStatus.UNAUTHORIZED
+               );
+          }
+
+          const user = await this.accountService.getAccountById(apiKeyResponse['account_id']);
 
           if (!user || !user.result.verified) {
                throw new HttpException(
@@ -103,7 +108,7 @@ export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
 
           if (apiKeyResponse['role'] == Role.VIEWER) {
                throw new HttpException(
-                    `Unauthorized, your current role does not allow to access.`,
+                    `Unauthorized, your current role : ${Role.VIEWER} does not allow to access.`,
                     HttpStatus.UNAUTHORIZED
                );
           }

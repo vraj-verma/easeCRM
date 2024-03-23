@@ -27,7 +27,7 @@ import { ContactService } from "../services/contact.service";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JoiValidationSchema } from "../validations/schema.validation";
 import { UserService } from "../services/users.service";
-import { MyRoles } from "src/security/roles.decorator";
+import { Roles } from "src/security/roles.decorator";
 import { Role } from "src/enums/enums";
 
 @ApiTags('Contact Controller')
@@ -42,6 +42,7 @@ export class ContactController {
 
      @ApiOperation({ summary: 'Create contact' })
      @ApiResponse({ type: Contact })
+     @Roles(Role.OWNER, Role.ADMIN)
      @Post()
      async create(
           @Req() req: Request,
@@ -127,7 +128,7 @@ export class ContactController {
 
      @ApiOperation({ summary: 'Assign contact to someone in your team' })
      @ApiResponse({ type: 'string' })
-     @MyRoles(Role.ADMIN, Role.OWNER)
+     @Roles(Role.ADMIN, Role.OWNER)
      @Patch('assign')
      async assignContacts(
           @Req() req: Request,
@@ -162,6 +163,7 @@ export class ContactController {
 
      @ApiOperation({ summary: 'Update contact by contact id' })
      @ApiResponse({ type: 'string' })
+     @Roles(Role.OWNER, Role.ADMIN)
      @Put(':id')
      async updateContactById(
           @Req() req: Request,
@@ -208,6 +210,7 @@ export class ContactController {
 
      @ApiOperation({ summary: 'Partial update contact by contact id' })
      @ApiResponse({ type: 'string' })
+     @Roles(Role.OWNER, Role.ADMIN)
      @Patch(":id")
      async partialUpdateContactById(
           @Req() req: Request,
@@ -255,6 +258,7 @@ export class ContactController {
 
      @ApiOperation({ summary: 'Delete contact by contact id(s)' })
      @ApiResponse({ type: 'string' })
+     @Roles(Role.OWNER, Role.ADMIN)
      @Delete()
      async deleteContact(
           @Req() req: Request,

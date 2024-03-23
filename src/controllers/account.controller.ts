@@ -22,9 +22,11 @@ import { ProfileService } from "../services/profile.service";
 import { AccountService } from "../services/account.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { Roles } from "src/security/roles.decorator";
+import { RolesGuard } from "src/security/roles.guard";
 
 @ApiTags('Account Controller')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('account')
 export class AccountController {
 
@@ -59,6 +61,7 @@ export class AccountController {
 
      @ApiOperation({ summary: 'Update an Account' })
      @ApiResponse({ type: 'string' })
+     @Roles(Role.OWNER, Role.ADMIN)
      @Put()
      async updateAccount(
           @Req() req: Request,
@@ -91,6 +94,7 @@ export class AccountController {
 
      @ApiOperation({ summary: 'Delete an Account' })
      @ApiResponse({ type: 'string' })
+     @Roles(Role.OWNER)
      @Delete()
      async deleteAccount(
           @Req() req: Request,

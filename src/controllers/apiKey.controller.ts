@@ -18,11 +18,14 @@ import { ApiKey } from "../schemas/apiKey.schema";
 import { ApiKeyService } from "../services/apiKey.service";
 import { JwtAuthGuard } from "../security/jwt.guard";
 import { AuthUser } from "../types/authUser";
-import { Utility } from "src/utils/utility";
+import { Utility } from "../utils/utility";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { RolesGuard } from "../security/roles.guard";
+import { Roles } from "../security/roles.decorator";
+import { Role } from "../enums/enums";
 
 @ApiTags('ApiKey Controller')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('apikey')
 export class ApiKeyController {
 
@@ -33,6 +36,7 @@ export class ApiKeyController {
 
     @ApiOperation({ summary: 'Create an API KEY' })
     @ApiResponse({ type: ApiKey })
+    @Roles(Role.OWNER, Role.ADMIN)
     @Post()
     async createApiKey(
         @Req() req: Request,
@@ -74,6 +78,8 @@ export class ApiKeyController {
         @Res() res: Response,
     ) {
 
+        console.log('hehheh')
+
         const { account_id } = <AuthUser>req.user;
 
         const response = await this.apiKeyService.getApiKeys(account_id);
@@ -113,6 +119,7 @@ export class ApiKeyController {
 
     @ApiOperation({ summary: 'Reset ApiKey' })
     @ApiResponse({ type: 'string' })
+    @Roles(Role.OWNER, Role.ADMIN)
     @Get('reset')
     async resetApiKey(
         @Req() req: Request,
@@ -180,6 +187,7 @@ export class ApiKeyController {
 
     @ApiOperation({ summary: 'Delete an ApiKey(s)' })
     @ApiResponse({ type: 'String' })
+    @Roles(Role.OWNER, Role.ADMIN)
     @Delete()
     async deleteApiKeys(
         @Req() req: Request,

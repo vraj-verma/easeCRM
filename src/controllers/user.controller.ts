@@ -16,7 +16,7 @@ import { JwtService } from "@nestjs/jwt";
 import { Request, Response } from "express";
 import { AuthUser } from "../types/authUser";
 import { joinUser } from "../types/changePassword";
-import { MyRoles } from "../security/roles.decorator";
+import { Roles } from "../security/roles.decorator";
 import { RolesGuard } from "../security/roles.guard";
 import { JwtAuthGuard } from "../security/jwt.guard";
 import { UserService } from "../services/users.service";
@@ -39,7 +39,7 @@ export class UserController {
      @ApiOperation({ summary: 'Invite a new user via email' })
      @ApiResponse({ type: 'string' })
      @UseGuards(JwtAuthGuard, RolesGuard)
-     @MyRoles(Role.OWNER, Role.ADMIN)
+     @Roles(Role.OWNER, Role.ADMIN)
      @Post('invite')
      async createUser(
           @Req() req: Request,
