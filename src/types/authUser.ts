@@ -1,3 +1,5 @@
+import { Role, Status } from "../enums/enums";
+
 export class AuthUser {
      _id: string;
      account_id: string;
@@ -12,13 +14,4 @@ export class AuthUser {
      token?: string;
 }
 
-export enum Status {
-     active = 'Active',
-     deactive = 'Deactive'
-}
 
-export enum Role {
-     Owner = 'Owner',
-     Admin = 'Admin',
-     Viewer = 'Viewer'
-}

@@ -11,9 +11,10 @@ import {
 } from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
 import { User } from "../types/user";
+import { Role } from "../enums/enums";
 import { JwtService } from "@nestjs/jwt";
 import { Request, Response } from "express";
-import { AuthUser, Role } from "../types/authUser";
+import { AuthUser } from "../types/authUser";
 import { joinUser } from "../types/changePassword";
 import { MyRoles } from "../security/roles.decorator";
 import { RolesGuard } from "../security/roles.guard";
@@ -38,7 +39,7 @@ export class UserController {
      @ApiOperation({ summary: 'Invite a new user via email' })
      @ApiResponse({ type: 'string' })
      @UseGuards(JwtAuthGuard, RolesGuard)
-     @MyRoles(Role.Owner, Role.Admin)
+     @MyRoles(Role.OWNER, Role.ADMIN)
      @Post('invite')
      async createUser(
           @Req() req: Request,
@@ -47,7 +48,7 @@ export class UserController {
      ) {
           const { account_id, name } = <AuthUser>req.user;
 
-          if (user.role === Role.Owner) {
+          if (user.role === Role.OWNER) {
                throw new HttpException(
                     `Only one Owner can be exist in an account, please assign other role: ['Admin', 'Viewer]`,
                     HttpStatus.BAD_REQUEST

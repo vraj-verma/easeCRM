@@ -10,16 +10,17 @@ import {
      Res,
      UseGuards
 } from "@nestjs/common";
+import { Role } from "../enums/enums";
 import { Request, Response } from "express";
-import { JwtAuthGuard } from "../security/jwt.guard";
-import { AccountService } from "../services/account.service";
-import { AuthUser, Role } from "../types/authUser";
+import { AuthUser } from "../types/authUser";
 import { Account } from "../schemas/account.schema";
-import { ValidationPipe } from "../pipes/validation.pipe";
-import { JoiValidationSchema } from "../validations/schema.validation";
+import { JwtAuthGuard } from "../security/jwt.guard";
 import { UserService } from "../services/users.service";
+import { ValidationPipe } from "../pipes/validation.pipe";
 import { ApiKeyService } from "../services/apiKey.service";
 import { ProfileService } from "../services/profile.service";
+import { AccountService } from "../services/account.service";
+import { JoiValidationSchema } from "../validations/schema.validation";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 @ApiTags('Account Controller')
@@ -66,7 +67,7 @@ export class AccountController {
      ) {
           const { account_id, role } = <AuthUser>req.user;
 
-          if (!role.includes(Role.Owner) && !role.includes(Role.Admin)) {
+          if (!role.includes(Role.OWNER) && !role.includes(Role.ADMIN)) {
                throw new HttpException(
                     `Your current role: ${role}, does not allow access to this.`,
                     HttpStatus.UNAUTHORIZED
