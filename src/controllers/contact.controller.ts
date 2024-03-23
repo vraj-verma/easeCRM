@@ -27,6 +27,8 @@ import { ContactService } from "../services/contact.service";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JoiValidationSchema } from "../validations/schema.validation";
 import { UserService } from "../services/users.service";
+import { MyRoles } from "src/security/roles.decorator";
+import { Role } from "src/enums/enums";
 
 @ApiTags('Contact Controller')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -121,6 +123,41 @@ export class ContactController {
           }
 
           res.status(200).json(response);
+     }
+
+     @ApiOperation({ summary: 'Assign contact to someone in your team' })
+     @ApiResponse({ type: 'string' })
+     @MyRoles(Role.ADMIN, Role.OWNER)
+     @Patch('assign')
+     async assignContacts(
+          @Req() req: Request,
+          @Res() res: Response,
+          @Body(new ValidationPipe(JoiValidationSchema.assignContactSchema)) payload: AssignContact,
+     ) {
+
+          const { account_id } = <AuthUser>req.user;
+
+          const isUserExists = await this.userService.getUserByUserId(payload.user_id, account_id);
+          if (!isUserExists) {
+               throw new HttpException(
+                    `No user exist with user id: ${payload.user_id}`,
+                    HttpStatus.NOT_FOUND
+               );
+          }
+
+          const response = await this.contactService.assignContactToOtherUser(payload, account_id)
+
+          if (!response) {
+               throw new HttpException(
+                    `Failed to assign contact(s)`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
+          res.status(200).json(
+               {
+                    message: `Contact(s): [${payload.contact_id}] assigned to user: ${payload.user_id}`
+               }
+          );
      }
 
      @ApiOperation({ summary: 'Update contact by contact id' })
@@ -254,38 +291,5 @@ export class ContactController {
           )
      }
 
-     @ApiOperation({ summary: 'Assign contact to someone in your team' })
-     @ApiResponse({ type: 'string' })
-     @Patch('assign')
-     async assignContacts(
-          @Req() req: Request,
-          @Res() res: Response,
-          @Body(new ValidationPipe(JoiValidationSchema.assignContactSchema)) payload: AssignContact,
-     ) {
 
-          const { _id, account_id } = <AuthUser>req.user;
-
-          const isUserExists = await this.userService.getUserByUserId(payload.user_id, account_id);
-          if (!isUserExists) {
-               throw new HttpException(
-                    `No user exist with user id: ${payload.user_id}`,
-                    HttpStatus.NOT_FOUND
-               );
-          }
-
-          for (let contact_id of payload.contactIds) {
-               const isContactExist = await this.contactService.getContactById(_id, contact_id);
-               if (!isContactExist) {
-                    throw new HttpException(
-                         `No contact exist with contact id: ${contact_id}`,
-                         HttpStatus.NOT_FOUND
-                    );
-               }
-          }
-
-          // const response = await this.contactService.assignContactToOtherUser(payload)
-
-          // to be complete later
-
-     }
 }

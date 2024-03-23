@@ -1,6 +1,6 @@
 import * as joi from "joi";
-import { Address } from "src/types/account";
-import { Role } from "src/types/authUser";
+import { Address } from "../types/account";
+import { Role } from "../enums/enums";
 
 export class JoiValidationSchema {
      static signupSchema = joi.object({
@@ -39,7 +39,7 @@ export class JoiValidationSchema {
      });
 
      static assignContactSchema = joi.object({
-          user_id: joi.string().min(2).max(20).required(),
+          user_id: joi.string().min(24).max(24).required(),
           contact_id: joi.array().items(joi.string().required()).required(),
           message: joi.string().optional().allow(null, '')
      });

@@ -11,24 +11,23 @@ import {
      UseGuards
 } from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
-import { Plan } from "../types/account";
 import { JwtService } from "@nestjs/jwt";
 import { Signin } from "../types/signin";
 import { Signup } from "../types/signup";
 import { Request, Response } from "express";
 import { AuthUser } from './../types/authUser';
 import { User as UserType } from '../types/user'
-import { Role, Status } from "../types/authUser";
 import { AuthService } from "../services/auth.service";
 import { UserService } from "../services/users.service";
 import { ValidationPipe } from "../pipes/validation.pipe";
 import { GoogleOAuthGuard } from "../security/google.guard";
-import { ApiExcludeEndpoint, ApiOAuth2, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiExcludeEndpoint, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ProfileService } from "../services/profile.service";
 import { MailService } from "../mails/mail-template.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
 import { User } from "../schemas/users.schema";
 import { Utility } from "../utils/utility";
+import { Plan, Role, Status } from "../enums/enums";
 
 @ApiTags('Auth Controller')
 @Controller('auth')
@@ -63,8 +62,8 @@ export class AuthController {
           const accountInitalData = {
                email: data.email,
                name: data.name,
-               role: Role.Owner,
-               plan: Plan.free,
+               role: Role.OWNER,
+               plan: Plan.FREE,
                users_used: 1,
                users_limit: 2,
           }
@@ -78,7 +77,7 @@ export class AuthController {
                account_id: account_id,
                email: data.email,
                name: data.name ? data.name : 'John Doe',
-               role: Role.Owner,
+               role: Role.OWNER,
                password: data.password,
                verified: false,
           }
@@ -96,8 +95,8 @@ export class AuthController {
                account_id,
                _id: user._id,
                email: data.email,
-               role: Role.Owner,
-               status: Status.active,
+               role: Role.OWNER,
+               status: Status.ACTIVE,
                name: data.name,
                users_limit: 1,
                users_used: 2,
@@ -131,14 +130,22 @@ export class AuthController {
      async signin(
           @Req() req: Request,
           @Res() res: Response,
-          @Body() signin: Signin
+          @Body() signinPayload: Signin
      ) {
-          const user = await this.userService.getUserByEmail(signin.email);
+
+          const user = await this.userService.getUserByEmail(signinPayload.email);
 
           if (!user) {
                throw new HttpException(
                     `User is not registered or the account is deleted, please signup first`,
                     HttpStatus.NOT_FOUND
+               );
+          }
+
+          if (!user.password) {
+               throw new HttpException(
+                    `Please set your password, then login`,
+                    HttpStatus.BAD_REQUEST
                );
           }
 
@@ -149,14 +156,14 @@ export class AuthController {
                );
           }
 
-          if (user?.account.status !== Status.active) {
+          if (user?.account.status !== Status.ACTIVE) {
                throw new HttpException(
                     `Account is not active, please contact to Admin`,
                     HttpStatus.NOT_FOUND
                );
           }
 
-          const isPasswordMatch = await bcrypt.compare(signin.password, user.password);
+          const isPasswordMatch = await bcrypt.compare(signinPayload.password, user.password);
 
           if (!isPasswordMatch) {
                throw new HttpException(
@@ -291,8 +298,8 @@ export class AuthController {
                const accountInitalData = {
                     email: user['email'],
                     name: user['name'],
-                    role: Role.Owner,
-                    plan: Plan.free,
+                    role: Role.OWNER,
+                    plan: Plan.FREE,
                     users_used: 1,
                     users_limit: 2,
                }
@@ -309,7 +316,7 @@ export class AuthController {
                     account_id: response['_id'],
                     email: user['email'],
                     name: user['name'] ? user['name'] : 'John Doe',
-                    role: Role.Owner,
+                    role: Role.OWNER,
                     password: '',
                     verified: false,
                     oAuth: true
@@ -343,8 +350,8 @@ export class AuthController {
                     account_id: response['account_id'],
                     _id: creatUser._id,
                     email: user['email'],
-                    role: Role.Owner,
-                    status: Status.active,
+                    role: Role.OWNER,
+                    status: Status.ACTIVE,
                     name: user['name'],
                     users_limit: 1,
                     users_used: 2,

@@ -1,5 +1,6 @@
 import { Types } from "mongoose";
-import { Role } from "./authUser";
+import { Role } from "../enums/enums";
+
 
 export type User = {
      account_id?: string | Types.ObjectId;

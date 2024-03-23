@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document, Types } from "mongoose";
-import { Address, Plan } from "../types/account";
-import { Role, Status } from "../types/authUser";
+import { Document } from "mongoose";
+import { Address} from "../types/account";
 import { ApiProperty } from "@nestjs/swagger";
+import { Plan, Role, Status } from "../enums/enums";
 
 export type AccountDocument = Account & Document;
 
@@ -10,7 +10,7 @@ export type AccountDocument = Account & Document;
 export class Account {
 
      @ApiProperty({ required: false })
-     @Prop({ default: Role.Owner })
+     @Prop({ default: Role.OWNER })
      role?: Role;
 
      @ApiProperty({ required: false })
@@ -18,7 +18,7 @@ export class Account {
      bio?: string;
 
      @ApiProperty({ required: false })
-     @Prop({ default: Plan.free })
+     @Prop({ default: Plan.FREE })
      plan?: Plan;
 
      @ApiProperty({ required: false })
@@ -26,7 +26,7 @@ export class Account {
      avatar?: string;
 
      @ApiProperty({ required: false })
-     @Prop({ default: Status.active })
+     @Prop({ default: Status.ACTIVE })
      status?: Status;
 
      @ApiProperty({ required: false })

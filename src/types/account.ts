@@ -1,3 +1,5 @@
+import { Plan } from "../enums/enums";
+
 export type Account = {
      account_id?: number | string;
      name?: string;
@@ -11,11 +13,6 @@ export type Account = {
      updatedAt?: Date;
 }
 
-export enum Plan {
-     free = 'Free',
-     basic = 'Basic',
-     pro = 'Pro'
-}
 
 export class Address {
      street?: string;

@@ -4,8 +4,8 @@ import {
     SchemaFactory
 } from "@nestjs/mongoose";
 import { Document } from "mongoose";
-import { Role } from "../types/authUser";
 import { ApiProperty } from "@nestjs/swagger";
+import { Role } from "../enums/enums";
 
 export type ApiKeyDocument = ApiKey & Document
 

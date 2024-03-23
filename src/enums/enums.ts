@@ -9,8 +9,14 @@ enum Status {
      DEACTIVE = 'Deactive'
 }
 
+enum Plan {
+     FREE = 'Free',
+     BASIC = 'Basic',
+     PRO = 'Pro'
+}
 
 export {
      Role,
-     Status
+     Status,
+     Plan,
 }

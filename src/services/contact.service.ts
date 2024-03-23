@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Schema, Types } from "mongoose";
 import { Contact, ContactDocument } from "../schemas/contact.schema";
 import { Paged } from "../types/pagination";
 import { AssignContact } from "src/types/assignContact";
@@ -65,7 +65,14 @@ export class ContactService {
           return response ? response.modifiedCount > 0 : false;
      }
 
-     // async assignContactToOtherUser(payload: AssignContact) {
-     //      const filter = { _id: payload.contactIds }
-     // }
+     async assignContactToOtherUser(payload: AssignContact, account_id: string): Promise<boolean> {
+          const filter = { _id: { $in: payload.contact_id }, account_id };
+          const response = await this.contactDB.updateMany(filter, {
+               $set: {
+                    user_id: payload.user_id
+               }
+          });
+
+          return response ? response.modifiedCount > 0 : false;
+     }
 }

@@ -4,8 +4,8 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { UserService } from "../services/users.service";
 import { Strategy as customStrategy } from 'passport-custom';
 import { ApiKeyService } from "../services/apiKey.service";
-import { Role } from "../types/authUser";
 import { AccountService } from "../services/account.service";
+import { Role } from "../enums/enums";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -101,7 +101,7 @@ export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
                );
           }
 
-          if (apiKeyResponse['role'] == Role.Viewer) {
+          if (apiKeyResponse['role'] == Role.VIEWER) {
                throw new HttpException(
                     `Unauthorized, your current role does not allow to access.`,
                     HttpStatus.UNAUTHORIZED

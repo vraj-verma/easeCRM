@@ -1,5 +1,5 @@
 export type AssignContact = {
      user_id: string;
-     contactIds: string[];
+     contact_id: string[];
      message?: string;
 }

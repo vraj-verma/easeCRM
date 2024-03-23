@@ -1,4 +1,4 @@
-import { Role } from "./authUser";
+import { Role } from "../enums/enums";
 
 export type ApiKey = {
      apiKey_id?: string;
