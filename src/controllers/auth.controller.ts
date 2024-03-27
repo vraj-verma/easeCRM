@@ -177,7 +177,7 @@ export class AuthController {
                email: user.email
           }
 
-          const token = this.jwtService.sign(payload);
+          const token = this.utility.generateJWTToken(payload);
 
           const cookieOption = {
                httpOnly: true,
@@ -212,7 +212,7 @@ export class AuthController {
                );
           }
 
-          const decodedToken = await this.jwtService.verify(token);
+          const decodedToken = await this.utility.verifyJWTToken(token);
 
           if (!decodedToken) {
                throw new HttpException(
@@ -329,7 +329,7 @@ export class AuthController {
                     email: user['email']
                }
 
-               const token = this.jwtService.sign(payload);
+               const token = this.utility.generateJWTToken(payload);
 
                try {
                     await this.mailService.sendWelcomeEmail({ name: user['name'], email: user['email'], token });

@@ -24,6 +24,7 @@ import { ValidationPipe } from "../pipes/validation.pipe";
 import { MailService } from "../mails/mail-template.service";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JoiValidationSchema } from "../validations/schema.validation";
+import { Utility } from "src/utils/utility";
 
 
 @ApiTags('User Controller')
@@ -32,7 +33,7 @@ export class UserController {
 
      constructor(
           private userService: UserService,
-          private jwtService: JwtService,
+          private utility: Utility,
           private mailService: MailService,
      ) { }
 
@@ -78,7 +79,7 @@ export class UserController {
                email: user.email
           }
 
-          const token = this.jwtService.sign(payload);
+          const token = this.utility.generateJWTToken(payload);
 
           const inviteObj = {
                name,
@@ -122,7 +123,7 @@ export class UserController {
                );
           }
 
-          const decodedToken = await this.jwtService.verify(token);
+          const decodedToken = await this.utility.verifyJWTToken(token);
 
           if (!decodedToken) {
                throw new HttpException(
