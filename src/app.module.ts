@@ -31,7 +31,8 @@ import { UserController } from './controllers/user.controller';
 import { Utility } from './utils/utility';
 import { ContactController } from './controllers/contact.controller';
 import { ContactService } from './services/contact.service';
-// import { MongoIdPipe } from './pipes/mongo-id.validation.pipe';
+import { AdminController } from './controllers/admin/admin.controller';
+import { AdminService } from './controllers/admin/admin.service';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { ContactService } from './services/contact.service';
     AccountController,
     UserController,
     ContactController,
+    AdminController,
   ],
   providers: [
     AuthService,
@@ -85,7 +87,6 @@ import { ContactService } from './services/contact.service';
     TokenStrategy,
     GoogleStrategy,
     ValidationPipe,
-    // MongoIdPipe,
     MailService,
     EmailProcessor,
     FileSizeValidationPipe,
@@ -93,6 +94,7 @@ import { ContactService } from './services/contact.service';
     ContactService,
     ApiKeyService,
     AccountService,
+    AdminService,
     Utility,
   ],
 })

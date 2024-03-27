@@ -14,7 +14,7 @@ export class LoggerMiddleware implements NestMiddleware {
      private logger = new Logger();
      async use(req: Request, res: Response, next: NextFunction) {
 
-          this.logger.log(`Logging HTTP request: METHOD-> ${req.method} - SLUG-> ${req.url} - STATUSCODE -> ${res.statusCode}`);
+          this.logger.warn(`Logging HTTP request: METHOD-> ${req.method}, SLUG-> ${req.url}, STATUSCODE -> ${res.statusCode}`);
 
           const requestLog = {
                method: req.method,

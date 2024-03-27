@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { User as userType } from "../types/user";
 import { User, UserDocument } from "../schemas/users.schema";
+import { Paged } from "src/types/pagination";
 
 @Injectable()
 export class UserService {
@@ -102,6 +103,29 @@ export class UserService {
           );
 
           return response ? response.modifiedCount > 0 : false;
+     }
+
+     async getUsers() {
+          const response = await this.userDB.aggregate(
+               [
+                    {
+                         $group: {
+                              _id: null,
+                              total_count: { $sum: 1 },
+                              users: { $push: "$$ROOT" } // Push all documents into an array
+                         }
+                    },
+                    {
+                         $project: {
+                              _id: 0,
+                              total_count: 1,
+                              users: 1
+                         }
+                    }
+               ]
+          ); 
+
+          return response ? response : [];
      }
 
 
