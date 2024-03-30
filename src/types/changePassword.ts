@@ -1,10 +1,14 @@
-export type ChangePassword = {
-     currentPassword: string;
-     newPassword: string;
+type UpdatePassword = {
+     password: string;
      confirmPassword: string;
 }
 
-export type joinUser  = {
+type joinUser = {
      password: string;
      confirmPassword: string;
+}
+
+export {
+     UpdatePassword,
+     joinUser
 }

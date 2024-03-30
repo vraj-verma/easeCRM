@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { customAlphabet } from 'nanoid'
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class Utility {
@@ -27,5 +28,16 @@ export class Utility {
 
      async verifyJWTToken(token: string) {
           return await this.jwtService.verify(token);
+     }
+
+
+     async decryptPassword(password: string) {
+          const salt = await bcrypt.genSalt(7);
+          const hash = bcrypt.hash(password, salt);
+          return hash;
+     }
+
+     async encryptPassword(compareTo: string, compareWith: string) {
+          return await bcrypt.compare(compareTo, compareWith);
      }
 }

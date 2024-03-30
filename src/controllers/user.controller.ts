@@ -15,7 +15,7 @@ import { Role } from "../enums/enums";
 import { JwtService } from "@nestjs/jwt";
 import { Request, Response } from "express";
 import { AuthUser } from "../types/authUser";
-import { joinUser } from "../types/changePassword";
+import { joinUser, UpdatePassword } from "../types/changePassword";
 import { Roles } from "../security/roles.decorator";
 import { RolesGuard } from "../security/roles.guard";
 import { JwtAuthGuard } from "../security/jwt.guard";
@@ -25,6 +25,7 @@ import { MailService } from "../mails/mail-template.service";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JoiValidationSchema } from "../validations/schema.validation";
 import { Utility } from "src/utils/utility";
+import { Exception } from "src/errors/exception.error";
 
 
 @ApiTags('User Controller')
@@ -148,7 +149,7 @@ export class UserController {
                );
           }
 
-          const hash = await bcrypt.hash(joinUser.password, 5);
+          const hash = await this.utility.decryptPassword(joinUser.password);
 
           const setPassword = await this.userService.updatePassword(decodedToken._id, hash);
 
@@ -168,4 +169,41 @@ export class UserController {
 
      }
 
+
+     @ApiOperation({ summary: 'Update password' })
+     @ApiResponse({ type: 'string' })
+     @UseGuards(JwtAuthGuard, RolesGuard)
+     @Post('update-password')
+     async updatePassword(
+          @Req() req: Request,
+          @Res() res: Response,
+          @Body(new ValidationPipe(JoiValidationSchema.updatePasswordSchema)) payload: UpdatePassword
+     ) {
+
+          const { _id } = <AuthUser>req.user;
+
+          if (payload.password !== payload.confirmPassword) {
+               throw new Exception(
+                    'Password & Confirm Password mismatched!',
+                    HttpStatus.BAD_REQUEST
+               );
+          }
+
+          const hash = await this.utility.decryptPassword(payload.password);
+
+          const response = await this.userService.updatePassword(_id, hash);
+
+          if (!response) {
+               throw new Exception(
+                    'Something went wrong',
+                    HttpStatus.INTERNAL_SERVER_ERROR
+               );
+          }
+
+          res.status(200).json(
+               {
+                    message: 'Password updated successfully.'
+               }
+          );
+     }
 }

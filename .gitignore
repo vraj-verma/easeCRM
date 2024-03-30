@@ -3,7 +3,7 @@
 /node_modules
 .env
 
-roadmap.txt
+roadmap.md
 /public
 # Logs
 logs

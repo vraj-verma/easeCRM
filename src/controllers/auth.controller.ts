@@ -10,24 +10,28 @@ import {
      Res,
      UseGuards
 } from "@nestjs/common";
-import * as bcrypt from 'bcrypt';
+import {
+     ApiExcludeEndpoint,
+     ApiOperation,
+     ApiResponse,
+     ApiTags
+} from "@nestjs/swagger";
 import { JwtService } from "@nestjs/jwt";
 import { Signin } from "../types/signin";
 import { Signup } from "../types/signup";
+import { Utility } from "../utils/utility";
 import { Request, Response } from "express";
 import { AuthUser } from './../types/authUser';
+import { User } from "../schemas/users.schema";
 import { User as UserType } from '../types/user'
+import { Plan, Role, Status } from "../enums/enums";
 import { AuthService } from "../services/auth.service";
 import { UserService } from "../services/users.service";
 import { ValidationPipe } from "../pipes/validation.pipe";
 import { GoogleOAuthGuard } from "../security/google.guard";
-import { ApiExcludeEndpoint, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ProfileService } from "../services/profile.service";
 import { MailService } from "../mails/mail-template.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
-import { User } from "../schemas/users.schema";
-import { Utility } from "../utils/utility";
-import { Plan, Role, Status } from "../enums/enums";
 
 @ApiTags('Auth Controller')
 @Controller('auth')
@@ -68,7 +72,7 @@ export class AuthController {
                users_limit: 2,
           }
 
-          const hash = await bcrypt.hash(data.password, 5);
+          const hash = await this.utility.decryptPassword(data.password);
           data.password = hash;
 
           const account_id = await this.authService.signup(accountInitalData);
@@ -163,7 +167,7 @@ export class AuthController {
                );
           }
 
-          const isPasswordMatch = await bcrypt.compare(signinPayload.password, user.password);
+          const isPasswordMatch = await this.utility.encryptPassword(signinPayload.password, user.password);
 
           if (!isPasswordMatch) {
                throw new HttpException(

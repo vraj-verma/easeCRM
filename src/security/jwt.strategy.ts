@@ -117,6 +117,6 @@ export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
                throw new HttpException(`Unauthorized`, HttpStatus.UNAUTHORIZED);
           }
 
-          return { ...apiKeyResponse, ...user };
+          return { ...apiKeyResponse, ...user.result };
      }
 }

@@ -1,3 +1,5 @@
+import { CRM_STATUS, Deal } from "../enums/enums";
+
 export type CRM = {
      crm_id?: number | string;
      _id?: number | string;
@@ -9,14 +11,3 @@ export type CRM = {
      updatedAt?: Date;
 }
 
-export enum CRM_STATUS {
-     hot = 'Hot',
-     cold = 'Cold',
-     warm = 'Warm',
-}
-
-export enum Deal {
-     done = 'Done',
-     progress = 'Progress',
-     rejected = 'Rejected',
-}

@@ -1,9 +1,17 @@
-import { Controller, Get, HttpException, HttpStatus, Query, Res } from "@nestjs/common";
-import { Paged } from './../../types/pagination';
-import { UserService } from "../../services/users.service";
+import {
+     Controller,
+     Get,
+     HttpException,
+     HttpStatus,
+     Query,
+     Res
+} from "@nestjs/common";
 import { Response } from 'express';
+import { ApiExcludeController } from "@nestjs/swagger";
+import { UserService } from "../../services/users.service";
 
 // internal purpose only
+@ApiExcludeController()
 @Controller('admin')
 export class AdminController {
      constructor(

@@ -14,6 +14,7 @@ export class JoiValidationSchema {
           address: joi.valid(...Object.values(Address)).optional().allow(null, ''),
      });
 
+     // user related validation
      static inviteUserSchema = joi.object({
           name: joi.string().min(2).max(20).required(),
           email: joi.string().email().required(),
@@ -25,6 +26,12 @@ export class JoiValidationSchema {
           confirmPassword: joi.string().min(6).max(200).required()
      });
 
+     static updatePasswordSchema = joi.object({
+          password: joi.string().min(6).max(100).required(),
+          confirmPassword: joi.string().min(6).max(100).required(),
+     });
+
+     // contact related validation
      static createContactSchema = joi.object({
           _id: joi.string().optional().allow(null, ''),
           name: joi.string().min(2).max(20).required(),

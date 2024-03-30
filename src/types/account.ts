@@ -1,6 +1,6 @@
 import { Plan } from "../enums/enums";
 
-export type Account = {
+type Account = {
      account_id?: number | string;
      name?: string;
      address?: Address;
@@ -14,9 +14,14 @@ export type Account = {
 }
 
 
-export class Address {
+class Address {
      street?: string;
      city?: string;
      country?: string;
      pinCode?: number;
+}
+
+export {
+     Account,
+     Address
 }

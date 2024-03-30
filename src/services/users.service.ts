@@ -3,7 +3,6 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { User as userType } from "../types/user";
 import { User, UserDocument } from "../schemas/users.schema";
-import { Paged } from "src/types/pagination";
 
 @Injectable()
 export class UserService {
@@ -93,8 +92,7 @@ export class UserService {
      }
 
      async updatePassword(_id: string, password: string): Promise<boolean> {
-          const filter = { _id: _id }
-          const response = await this.userDB.updateOne(filter,
+          const response = await this.userDB.updateOne({ _id },
                {
                     $set: {
                          password
@@ -105,7 +103,7 @@ export class UserService {
           return response ? response.modifiedCount > 0 : false;
      }
 
-     async getUsers() {
+     async getUsers(): Promise<any> {
           const response = await this.userDB.aggregate(
                [
                     {
@@ -123,7 +121,7 @@ export class UserService {
                          }
                     }
                ]
-          ); 
+          );
 
           return response ? response : [];
      }

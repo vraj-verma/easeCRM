@@ -32,7 +32,6 @@ import { Utility } from './utils/utility';
 import { ContactController } from './controllers/contact.controller';
 import { ContactService } from './services/contact.service';
 import { AdminController } from './controllers/admin/admin.controller';
-import { AdminService } from './controllers/admin/admin.service';
 
 @Module({
   imports: [
@@ -94,7 +93,6 @@ import { AdminService } from './controllers/admin/admin.service';
     ContactService,
     ApiKeyService,
     AccountService,
-    AdminService,
     Utility,
   ],
 })
