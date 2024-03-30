@@ -1,13 +1,15 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
+import { ApiExcludeController, ApiTags } from "@nestjs/swagger";
 const fs = require('fs');
 const path = require('path');
 
+@ApiTags('Cron Job Controller')
+@ApiExcludeController()
 @Controller()
 export class CronJobController {
 
      @Cron('59 * * * * *')
-     @Get()
      async removeFileFromPublicFolder() {
 
           const directoryPath = path.join(__dirname, '../../public/temp');
