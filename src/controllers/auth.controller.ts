@@ -343,7 +343,7 @@ export class AuthController {
 
                // save avatar only in google OAuth case
                const profileInfo = {
-                    _id: creatUser._id,
+                    user_id: creatUser._id,
                     email: user['email'],
                     avatar: user['avatar']
                }

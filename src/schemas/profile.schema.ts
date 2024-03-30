@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 import {
      Prop,
      Schema,
@@ -11,9 +11,8 @@ export type ProfileDocument = Profile & Document;
 @Schema({ timestamps: true })
 export class Profile {
 
-     @ApiProperty({ required: false })
-     @Prop()
-     _id?: string;
+     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+     user_id: string
 
      @ApiProperty({ required: false })
      @Prop()

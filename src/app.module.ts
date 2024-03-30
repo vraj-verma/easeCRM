@@ -7,8 +7,10 @@ import {
 } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { BullModule } from '@nestjs/bull';
+import { Utility } from './utils/utility';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ScheduleModule } from '@nestjs/schedule';
 import { JwtAuthGuard } from './security/jwt.guard';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { AuthService } from './services/auth.service';
@@ -17,21 +19,21 @@ import { UserService } from './services/users.service';
 import { Schemas } from './mongoSchemas/schemas.config';
 import { ApiKeyService } from './services/apiKey.service';
 import { MailService } from './mails/mail-template.service';
+import { GoogleStrategy } from './security/google.strategy';
 import { ProfileService } from './services/profile.service';
+import { AccountService } from './services/account.service';
+import { ContactService } from './services/contact.service';
 import { AuthController } from './controllers/auth.controller';
+import { UserController } from './controllers/user.controller';
+import { CronJobController } from './controllers/cron.controller';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { ApiKeyController } from './controllers/apiKey.controller';
 import { ProfileController } from './controllers/profile.controller';
-import { JwtStrategy, TokenStrategy } from './security/jwt.strategy';
-import { FileSizeValidationPipe } from './pipes/fileSizeValidation.pipe';
-import { GoogleStrategy } from './security/google.strategy';
-import { AccountController } from './controllers/account.controller';
-import { AccountService } from './services/account.service';
-import { UserController } from './controllers/user.controller';
-import { Utility } from './utils/utility';
 import { ContactController } from './controllers/contact.controller';
-import { ContactService } from './services/contact.service';
+import { JwtStrategy, TokenStrategy } from './security/jwt.strategy';
+import { AccountController } from './controllers/account.controller';
 import { AdminController } from './controllers/admin/admin.controller';
+import { FileSizeValidationPipe } from './pipes/fileSizeValidation.pipe';
 
 @Module({
   imports: [
@@ -44,6 +46,7 @@ import { AdminController } from './controllers/admin/admin.controller';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1d' }
     }),
+    ScheduleModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGO_URI, { dbName: process.env.MONGO_DB }),
     MongooseModule.forFeature(Schemas),
     MailerModule.forRoot(
@@ -77,6 +80,7 @@ import { AdminController } from './controllers/admin/admin.controller';
     UserController,
     ContactController,
     AdminController,
+    CronJobController,
   ],
   providers: [
     AuthService,
