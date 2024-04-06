@@ -38,6 +38,7 @@ export class ContactService {
           const response = await this.contactDB.find({ user_id })
                .skip(paged.offset)
                .limit(paged.limit)
+               .sort({ [paged.sort]: -1 })
                .lean();
 
           return response ? response as unknown as Contact[] : null;

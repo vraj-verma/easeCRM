@@ -1,8 +1,12 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 export class Paged {
-     offset?: number = 0;
-     limit?: number = 10;
-     constructor(offset: number, limit: number) {
-         this.offset = offset;
-         this.limit = limit;
-     }
- }
+    @ApiProperty({ required: false, default: 0 })
+    offset: number = 0;
+
+    @ApiProperty({ required: false, default: 10, maximum: 1000 })
+    limit: number = 10;
+
+    @ApiProperty({ required: false })
+    sort?: string = 'createdAt';
+}

@@ -50,4 +50,10 @@ export class JoiValidationSchema {
           contact_id: joi.array().items(joi.string().required()).required(),
           message: joi.string().optional().allow(null, '')
      });
+
+     static paginationSchema = joi.object({
+          offset: joi.number().optional().default(0),
+          limit: joi.number().optional().default(10),
+          sort: joi.string().optional().default('createdAt'),
+     });
 }

@@ -74,13 +74,16 @@ export class ContactController {
 
      }
 
-     @ApiOperation({ summary: 'Get contacts associate with user' })
+     @ApiOperation({
+          summary: 'Get contacts',
+          description: 'To get all the contcts associate with user',
+     })
      @ApiResponse({ type: [Contact] })
      @Get()
      async getContacts(
           @Req() req: Request,
           @Res() res: Response,
-          @Query() paged: Paged
+          @Query(new ValidationPipe(JoiValidationSchema.paginationSchema)) paged: Paged
      ) {
 
           const { _id } = <AuthUser>req.user;
