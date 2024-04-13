@@ -3,7 +3,6 @@ import {
      Controller,
      Delete,
      Get,
-     HttpException,
      HttpStatus,
      Param,
      Patch,
@@ -27,8 +26,9 @@ import { ContactService } from "../services/contact.service";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JoiValidationSchema } from "../validations/schema.validation";
 import { UserService } from "../services/users.service";
-import { Roles } from "src/security/roles.decorator";
-import { Role } from "src/enums/enums";
+import { Roles } from "../security/roles.decorator";
+import { Role } from "../enums/enums";
+import { Exception } from "../errors/exception.error";
 
 @ApiTags('Contact Controller')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -56,7 +56,7 @@ export class ContactController {
 
           const isExist = await this.contactService.getContactByEmail(contact);
           if (isExist) {
-               throw new HttpException(
+               throw new Exception(
                     `Contact with email already exist: ${contact.email}`,
                     HttpStatus.BAD_REQUEST
                );
@@ -64,7 +64,7 @@ export class ContactController {
 
           const response = await this.contactService.createContact(contact);
           if (!response) {
-               throw new HttpException(
+               throw new Exception(
                     `Failed to create contact`,
                     HttpStatus.BAD_REQUEST
                );
@@ -90,7 +90,7 @@ export class ContactController {
 
           const response = await this.contactService.getContacts(_id, paged);
           if (!response || response.length < 1) {
-               throw new HttpException(
+               throw new Exception(
                     `No Contacts found`,
                     HttpStatus.NOT_FOUND
                );
@@ -109,7 +109,7 @@ export class ContactController {
      ) {
 
           if (!mongoose.isValidObjectId(contact_id)) {
-               throw new HttpException(
+               throw new Exception(
                     `Invalid id: ${contact_id}`,
                     HttpStatus.BAD_REQUEST
                );
@@ -120,7 +120,7 @@ export class ContactController {
           const response = await this.contactService.getContactById(user_id, contact_id);
 
           if (!response) {
-               throw new HttpException(
+               throw new Exception(
                     `No Contact found with contact id: ${contact_id}`,
                     HttpStatus.NOT_FOUND
                );
@@ -144,14 +144,14 @@ export class ContactController {
           const isUserExists = await this.userService.getUserByUserId(payload.user_id, account_id);
 
           if (account_id !== isUserExists.account_id) {
-               throw new HttpException(
+               throw new Exception(
                     `User must be exist in same account`,
                     HttpStatus.BAD_REQUEST
                );
           }
 
           if (!isUserExists) {
-               throw new HttpException(
+               throw new Exception(
                     `No user exist with user id: ${payload.user_id}`,
                     HttpStatus.NOT_FOUND
                );
@@ -160,7 +160,7 @@ export class ContactController {
           const response = await this.contactService.assignContactToOtherUser(payload, account_id)
 
           if (!response) {
-               throw new HttpException(
+               throw new Exception(
                     `Failed to assign contact(s)`,
                     HttpStatus.BAD_REQUEST
                );
@@ -189,7 +189,7 @@ export class ContactController {
           const isEmailAlreadyExist = await this.contactService.getContactByEmailAndAccountId(contact);
 
           if (isEmailAlreadyExist) {
-               throw new HttpException(
+               throw new Exception(
                     `This email is already exist: ${contact.email}`,
                     HttpStatus.BAD_REQUEST
                );
@@ -197,7 +197,7 @@ export class ContactController {
 
           const getContact = await this.contactService.getContactById(_id, contact_id);
           if (!getContact) {
-               throw new HttpException(
+               throw new Exception(
                     `No Contact found with contact id: ${contact_id}`,
                     HttpStatus.NOT_FOUND
                );
@@ -206,7 +206,7 @@ export class ContactController {
           const response = await this.contactService.updateContactById(contact_id, contact);
 
           if (!response) {
-               throw new HttpException(
+               throw new Exception(
                     `Failed to update contact`,
                     HttpStatus.BAD_REQUEST
                );
@@ -237,7 +237,7 @@ export class ContactController {
           const isEmailAlreadyExist = await this.contactService.getContactByEmailAndAccountId(contact);
 
           if (isEmailAlreadyExist) {
-               throw new HttpException(
+               throw new Exception(
                     `This email is already exist: ${contact.email}`,
                     HttpStatus.BAD_REQUEST
                );
@@ -245,7 +245,7 @@ export class ContactController {
 
           const getContact = await this.contactService.getContactById(_id, contact_id);
           if (!getContact) {
-               throw new HttpException(
+               throw new Exception(
                     `No Contact found with contact id: ${contact_id}`,
                     HttpStatus.NOT_FOUND
                );
@@ -254,7 +254,7 @@ export class ContactController {
           const response = await this.contactService.patchUpdateContactById(contact_id, contact);
 
           if (!response) {
-               throw new HttpException(
+               throw new Exception(
                     `Failed to update contact`,
                     HttpStatus.BAD_REQUEST
                );
@@ -285,7 +285,7 @@ export class ContactController {
 
           const isContactExist = await this.contactService.getContactById(_id, contact_ids);
           if (!isContactExist) {
-               throw new HttpException(
+               throw new Exception(
                     `No contact found with id(s): ${contact_ids}`,
                     HttpStatus.NOT_FOUND
                );
@@ -293,7 +293,7 @@ export class ContactController {
 
           const response = await this.contactService.deleteContacts(contact_ids, _id);
           if (!response) {
-               throw new HttpException(
+               throw new Exception(
                     `Failed to delete contact with id(s): ${contact_ids}`,
                     HttpStatus.BAD_REQUEST
                );

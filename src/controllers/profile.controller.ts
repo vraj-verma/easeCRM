@@ -1,6 +1,5 @@
 import {
      Controller,
-     HttpException,
      HttpStatus,
      Patch,
      Post,
@@ -58,7 +57,7 @@ export class ProfileController {
           const file = files.avatar[0].path;
 
           if (!file) {
-               throw new HttpException(
+               throw new Exception(
                     `Please upload a file`,
                     HttpStatus.BAD_REQUEST
                );
@@ -67,7 +66,7 @@ export class ProfileController {
           const avatarUrl = await uploadOnCloudinary(file, 'avatar');
 
           if (!avatarUrl) {
-               throw new HttpException(
+               throw new Exception(
                     `Something went wrong, file not uploaded to cloudinary`,
                     HttpStatus.BAD_REQUEST
                );

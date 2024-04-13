@@ -1,7 +1,6 @@
 import {
      Controller,
      Get,
-     HttpException,
      HttpStatus,
      Query,
      Res
@@ -9,6 +8,7 @@ import {
 import { Response } from 'express';
 import { ApiExcludeController } from "@nestjs/swagger";
 import { UserService } from "../../services/users.service";
+import { Exception } from "../../errors/exception.error";
 
 // internal purpose only
 @ApiExcludeController()
@@ -26,7 +26,7 @@ export class AdminController {
      ) {
 
           if (Object.keys(passcode).length == 0 || passcode['passcode'] !== process.env.PASSCODE) {
-               throw new HttpException(
+               throw new Exception(
                     `Passcode required or incorrect`,
                     HttpStatus.UNAUTHORIZED
                );
@@ -34,7 +34,7 @@ export class AdminController {
 
           const response = await this.userService.getUsers();
           if (!response) {
-               throw new HttpException(
+               throw new Exception(
                     `No user(s) found`,
                     HttpStatus.NOT_FOUND
                );

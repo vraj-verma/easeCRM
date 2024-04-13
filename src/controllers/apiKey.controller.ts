@@ -23,6 +23,7 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { RolesGuard } from "../security/roles.guard";
 import { Roles } from "../security/roles.decorator";
 import { Role } from "../enums/enums";
+import { Exception } from "../errors/exception.error";
 
 @ApiTags('ApiKey Controller')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -49,7 +50,7 @@ export class ApiKeyController {
 
         if (apiKeys) {
             if (apiKeys.find(key => key['name'] === apiKey.name)) {
-                throw new HttpException(
+                throw new Exception(
                     `Api key name is already exist`,
                     HttpStatus.BAD_REQUEST
                 );
@@ -61,7 +62,7 @@ export class ApiKeyController {
 
         const response = await this.apiKeyService.createApiKey(apiKey);
         if (!response) {
-            throw new HttpException(
+            throw new Exception(
                 `Apikey not created`,
                 HttpStatus.BAD_REQUEST
             );
@@ -85,7 +86,7 @@ export class ApiKeyController {
         const response = await this.apiKeyService.getApiKeys(account_id);
 
         if (!response) {
-            throw new HttpException(
+            throw new Exception(
                 `No apikeys found`,
                 HttpStatus.NOT_FOUND
             );
@@ -106,7 +107,7 @@ export class ApiKeyController {
         const response = await this.apiKeyService.getApiKeyByKey(apiKey);
 
         if (!response) {
-            throw new HttpException(
+            throw new Exception(
                 `No apikey id found with api key: ${apiKey}`,
                 HttpStatus.NOT_FOUND
             );
@@ -129,7 +130,7 @@ export class ApiKeyController {
         const isApiKeyExist = await this.apiKeyService.getApiKeyByKey(apiKey);
 
         if (!isApiKeyExist) {
-            throw new HttpException(
+            throw new Exception(
                 `Api key with key:${apiKey}, does not exist`,
                 HttpStatus.NOT_FOUND
             );
@@ -137,7 +138,7 @@ export class ApiKeyController {
 
         const response = await this.apiKeyService.resetApiKey(apiKey);
         if (!response) {
-            throw new HttpException(
+            throw new Exception(
                 `Api key did not reset`,
                 HttpStatus.SERVICE_UNAVAILABLE
             );
@@ -162,7 +163,7 @@ export class ApiKeyController {
         const [apiKey] = await this.apiKeyService.getApiKeys(authUser.account_id);
 
         if (!apiKey) {
-            throw new HttpException(
+            throw new Exception(
                 `Api key with account id: ${authUser.account_id}, does not exist`,
                 HttpStatus.NOT_FOUND
             );

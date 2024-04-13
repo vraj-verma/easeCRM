@@ -2,7 +2,6 @@ import {
      Body,
      Controller,
      Get,
-     HttpException,
      HttpStatus,
      Post,
      Query,
@@ -32,6 +31,7 @@ import { GoogleOAuthGuard } from "../security/google.guard";
 import { ProfileService } from "../services/profile.service";
 import { MailService } from "../mails/mail-template.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
+import { Exception } from "../errors/exception.error";
 
 @ApiTags('Auth Controller')
 @Controller('auth')
@@ -57,7 +57,7 @@ export class AuthController {
           const isAccountExist = await this.userService.getUserByEmailId(data.email);
 
           if (isAccountExist) {
-               throw new HttpException(
+               throw new Exception(
                     `User exist, please login`,
                     HttpStatus.BAD_REQUEST
                );
@@ -108,7 +108,7 @@ export class AuthController {
           }
 
           if (!account_id || !user) {
-               throw new HttpException(
+               throw new Exception(
                     `Account not created, try again`,
                     HttpStatus.BAD_REQUEST
                );
@@ -140,28 +140,28 @@ export class AuthController {
           const user = await this.userService.getUserByEmail(signinPayload.email);
 
           if (!user) {
-               throw new HttpException(
+               throw new Exception(
                     `User is not registered or the account is deleted, please signup first`,
                     HttpStatus.NOT_FOUND
                );
           }
 
           if (!user.password) {
-               throw new HttpException(
+               throw new Exception(
                     `Please set your password, then login`,
                     HttpStatus.BAD_REQUEST
                );
           }
 
           if (user.oAuth) {
-               throw new HttpException(
+               throw new Exception(
                     `Created with Google, please try logging in with your Google account.`,
                     HttpStatus.BAD_REQUEST
                );
           }
 
           if (user?.account.status !== Status.ACTIVE) {
-               throw new HttpException(
+               throw new Exception(
                     `Account is not active, please contact to Admin`,
                     HttpStatus.NOT_FOUND
                );
@@ -170,7 +170,7 @@ export class AuthController {
           const isPasswordMatch = await this.utility.encryptPassword(signinPayload.password, user.password);
 
           if (!isPasswordMatch) {
-               throw new HttpException(
+               throw new Exception(
                     `Password does not match, please retry`,
                     HttpStatus.BAD_REQUEST
                );
@@ -210,7 +210,7 @@ export class AuthController {
      ) {
 
           if (!token) {
-               throw new HttpException(
+               throw new Exception(
                     `Token should not be empty!`,
                     HttpStatus.BAD_REQUEST
                );
@@ -219,7 +219,7 @@ export class AuthController {
           const decodedToken = await this.utility.verifyJWTToken(token);
 
           if (!decodedToken) {
-               throw new HttpException(
+               throw new Exception(
                     `Token invalid or expired`,
                     HttpStatus.BAD_REQUEST
                );
@@ -228,14 +228,14 @@ export class AuthController {
           const authUser = await this.userService.getUserByEmail(decodedToken.email);
 
           if (!authUser) {
-               throw new HttpException(
+               throw new Exception(
                     `User with email: ${decodedToken.email} does not exist`,
                     HttpStatus.NOT_FOUND
                );
           }
 
           if (authUser.verified) {
-               throw new HttpException(
+               throw new Exception(
                     `Already verified.`,
                     HttpStatus.BAD_REQUEST
                );
@@ -244,7 +244,7 @@ export class AuthController {
           const accountVerified = await this.userService.verfiyUser(decodedToken.email);
 
           if (!accountVerified) {
-               throw new HttpException(
+               throw new Exception(
                     `Something went wrong, Please try again`,
                     HttpStatus.BAD_REQUEST
                );
@@ -310,7 +310,7 @@ export class AuthController {
 
                const response = await this.authService.signup(accountInitalData);
                if (!response) {
-                    throw new HttpException(
+                    throw new Exception(
                          `Failed to create an account with Google`,
                          HttpStatus.NOT_IMPLEMENTED
                     );

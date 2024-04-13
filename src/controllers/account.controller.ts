@@ -3,7 +3,6 @@ import {
      Controller,
      Delete,
      Get,
-     HttpException,
      HttpStatus,
      Put,
      Req,
@@ -22,8 +21,9 @@ import { ProfileService } from "../services/profile.service";
 import { AccountService } from "../services/account.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Roles } from "src/security/roles.decorator";
-import { RolesGuard } from "src/security/roles.guard";
+import { Roles } from "../security/roles.decorator";
+import { RolesGuard } from "../security/roles.guard";
+import { Exception } from "../errors/exception.error";
 
 @ApiTags('Account Controller')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -50,7 +50,7 @@ export class AccountController {
           const response = await this.accountService.getAccount(account_id);
 
           if (!response) {
-               throw new HttpException(
+               throw new Exception(
                     `No account found`,
                     HttpStatus.NOT_FOUND
                );
@@ -71,7 +71,7 @@ export class AccountController {
           const { account_id, role } = <AuthUser>req.user;
 
           if (!role.includes(Role.OWNER) && !role.includes(Role.ADMIN)) {
-               throw new HttpException(
+               throw new Exception(
                     `Your current role: ${role}, does not allow access to this.`,
                     HttpStatus.UNAUTHORIZED
                );
@@ -79,7 +79,7 @@ export class AccountController {
           const response = await this.accountService.updateAccount(account_id, account);
 
           if (!response) {
-               throw new HttpException(
+               throw new Exception(
                     `Failed to update account`,
                     HttpStatus.BAD_REQUEST
                );
@@ -105,7 +105,7 @@ export class AccountController {
           const response = await this.accountService.deleteAccount(account_id);
 
           if (!response) {
-               throw new HttpException(
+               throw new Exception(
                     `Failed to delete account`,
                     HttpStatus.BAD_REQUEST
                );
