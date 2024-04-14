@@ -16,15 +16,15 @@ enum Plan {
 }
 
 enum CRM_STATUS {
-     hot = 'Hot',
-     cold = 'Cold',
-     warm = 'Warm',
+     HOT = 'Hot',
+     COLD = 'Cold',
+     WARM = 'Warm',
 }
 
 enum Deal {
-     done = 'Done',
-     progress = 'Progress',
-     rejected = 'Rejected',
+     DONE = 'Done',
+     PROGRESS = 'Progress',
+     REJECTED = 'Rejected',
 }
 
 export {
