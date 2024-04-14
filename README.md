@@ -103,7 +103,7 @@ The API is built with NestJS, a progressive Node.js framework for building effic
 
 - **`POST /v1/api/user/update-password`**
   - Description: Update password.
-  - 
+
 - **`DELETE /v1/api/user`**
   - Description: Delete the logged-in user.
 
