@@ -34,6 +34,7 @@ import { JwtStrategy, TokenStrategy } from './security/jwt.strategy';
 import { AccountController } from './controllers/account.controller';
 import { AdminController } from './controllers/admin/admin.controller';
 import { FileSizeValidationPipe } from './pipes/fileSizeValidation.pipe';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -71,6 +72,10 @@ import { FileSizeValidationPipe } from './pipes/fileSizeValidation.pipe';
     BullModule.registerQueue({
       name: 'sendingMail'
     }),
+    ThrottlerModule.forRoot([{
+      ttl: +process.env.THROTTLE_TTL,
+      limit: +process.env.THROTTLE_LIMIT,
+    }]),
   ],
   controllers: [
     AuthController,
