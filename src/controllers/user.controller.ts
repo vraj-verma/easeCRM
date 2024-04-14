@@ -1,6 +1,7 @@
 import {
      Body,
      Controller,
+     Delete,
      HttpException,
      HttpStatus,
      Param,
@@ -169,7 +170,6 @@ export class UserController {
 
      }
 
-
      @ApiOperation({ summary: 'Update password' })
      @ApiResponse({ type: 'string' })
      @UseGuards(JwtAuthGuard, RolesGuard)
@@ -205,5 +205,28 @@ export class UserController {
                     message: 'Password updated successfully.'
                }
           );
+     }
+
+     @ApiOperation({ summary: 'Delete logged in user' })
+     @ApiResponse({ type: 'string' })
+     @Delete()
+     async deleteUser(
+          @Req() req: Request,
+          @Res() res: Response,
+     ) {
+
+          const { _id } = <AuthUser>req.user;
+
+          const response = await this.userService.deleteUser(_id);
+          if (!response) {
+               throw new Exception(
+                    `Something went wrong`,
+                    HttpStatus.INTERNAL_SERVER_ERROR
+               );
+          }
+
+          res.status(200).json({
+               message: `User deleted successfully`
+          });
      }
 }
