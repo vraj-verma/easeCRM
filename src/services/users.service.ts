@@ -127,7 +127,8 @@ export class UserService {
      }
 
      async deleteUser(user_id: string): Promise<boolean> {
-          const response = (await this.userDB.deleteOne({ user_id }));
+          const filter = { _id: user_id }
+          const response = await this.userDB.deleteOne(filter);
           return response ? response.deletedCount > 0 : false;
      }
 

@@ -209,6 +209,7 @@ export class UserController {
 
      @ApiOperation({ summary: 'Delete logged in user' })
      @ApiResponse({ type: 'string' })
+     @UseGuards(JwtAuthGuard)
      @Delete()
      async deleteUser(
           @Req() req: Request,
