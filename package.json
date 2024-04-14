@@ -1,8 +1,8 @@
 {
   "name": "ease-crm-api",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "easeCRM: Streamlining relationships for effortless business growth.",
+  "author": "Sumit Verma",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

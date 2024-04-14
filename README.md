@@ -1,73 +1,130 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# easeCRM API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+**Version**: 0.0.1  
+**Author**: Sumit Verma  
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+**Description**:  
+easeCRM is an application designed to streamline relationships for effortless business growth. It provides an API for managing accounts, users, contacts, profiles, API keys, and more. This documentation outlines the available endpoints and their usage.
 
-## Description
+The API is built with NestJS, a progressive Node.js framework for building efficient and scalable server-side applications. It uses TypeScript for its source code, providing a strong type system and other benefits.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Table of Contents
+- [easeCRM API](#easecrm-api)
+  - [Table of Contents](#table-of-contents)
+- [API Documentation](#api-documentation)
+  - [Auth Controller](#auth-controller)
+    - [Routes:](#routes)
+  - [Profile Controller](#profile-controller)
+    - [Routes:](#routes-1)
+  - [ApiKey Controller](#apikey-controller)
+    - [Routes:](#routes-2)
+  - [Account Controller](#account-controller)
+    - [Routes:](#routes-3)
+  - [User Controller](#user-controller)
+    - [Routes:](#routes-4)
+  - [Contact Controller](#contact-controller)
+    - [Routes:](#routes-5)
 
-## Installation
+# API Documentation
 
-```bash
-$ npm install
-```
+## Auth Controller
 
-## Running the app
+### Routes:
 
-```bash
-# development
-$ npm run start
+- **`POST /v1/api/auth/signup`**
+  - Description: Create an account.
 
-# watch mode
-$ npm run start:dev
+- **`POST /v1/api/auth/signin`**
+  - Description: Sign in to account and receive a JWT token.
 
-# production mode
-$ npm run start:prod
-```
+- **`GET /v1/api/auth/verify-account`**
+  - Description: Verify account and access account.
 
-## Test
+- **`POST /v1/api/auth/forgot-password`**
+  - Description: Forgot password.
 
-```bash
-# unit tests
-$ npm run test
+- **`GET /v1/api/auth/google`**
+  - Description: Sign in with Google.
 
-# e2e tests
-$ npm run test:e2e
+## Profile Controller
 
-# test coverage
-$ npm run test:cov
-```
+### Routes:
 
-## Support
+- **`POST /v1/api/profile/avatar`**
+  - Description: Upload avatar.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- **`PATCH /v1/api/profile/remove-avatar`**
+  - Description: Remove avatar.
 
-## Stay in touch
+## ApiKey Controller
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Routes:
 
-## License
+- **`POST /v1/api/apikey`**
+  - Description: Create an API key.
 
-Nest is [MIT licensed](LICENSE).
+- **`GET /v1/api/apikey`**
+  - Description: Retrieve API keys.
+
+- **`DELETE /v1/api/apikey`**
+  - Description: Delete an API key or API keys.
+
+- **`GET /v1/api/apikey/{apikey}`**
+  - Description: Retrieve an API key by key.
+
+- **`GET /v1/api/apikey/reset`**
+  - Description: Reset an API key.
+
+- **`PATCH /v1/api/apikey/switch-status`**
+  - Description: Toggle API key status.
+
+## Account Controller
+
+### Routes:
+
+- **`GET /v1/api/account`**
+  - Description: Retrieve an account.
+
+- **`PUT /v1/api/account`**
+  - Description: Update an account.
+
+- **`DELETE /v1/api/account`**
+  - Description: Delete an account.
+
+## User Controller
+
+### Routes:
+
+- **`POST /v1/api/user/invite`**
+  - Description: Invite a new user via email.
+
+- **`POST /v1/api/user/join/{token}`**
+  - Description: Join and set password.
+
+- **`POST /v1/api/user/update-password`**
+  - Description: Update password.
+
+## Contact Controller
+
+### Routes:
+
+- **`POST /v1/api/contact`**
+  - Description: Create contact.
+
+- **`GET /v1/api/contact`**
+  - Description: Retrieve contacts.
+
+- **`DELETE /v1/api/contact`**
+  - Description: Delete contact by contact ID(s).
+
+- **`GET /v1/api/contact/{id}`**
+  - Description: Retrieve contact by contact ID.
+
+- **`PUT /v1/api/contact/{id}`**
+  - Description: Update contact by contact ID.
+
+- **`PATCH /v1/api/contact/{id}`**
+  - Description: Partial update of contact by contact ID.
+
+- **`PATCH /v1/api/contact/assign`**
+  - Description: Assign contact to someone in your team.
