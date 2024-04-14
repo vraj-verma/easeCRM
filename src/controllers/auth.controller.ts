@@ -32,6 +32,7 @@ import { ProfileService } from "../services/profile.service";
 import { MailService } from "../mails/mail-template.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
 import { Exception } from "../errors/exception.error";
+import { ThrottlerGuard } from "@nestjs/throttler";
 
 @ApiTags('Auth Controller')
 @Controller('auth')
@@ -130,6 +131,7 @@ export class AuthController {
 
      @ApiOperation({ summary: 'Signin to account & get JWT token' })
      @ApiResponse({ type: User })
+     @UseGuards(ThrottlerGuard)
      @Post('signin')
      async signin(
           @Req() req: Request,
@@ -257,6 +259,38 @@ export class AuthController {
                }
           );
      }
+
+     @ApiOperation({ summary: 'Forgot password' })
+     @ApiResponse({ type: 'string' })
+     @Post('forgot-password')
+     async forgotPassword(
+          @Res() res: Response,
+          @Body('email') email: string
+     ) {
+
+          const user = await this.userService.getUserByEmail(email);
+          if (!user) {
+               throw new Exception(
+                    `User with email: ${email} not found`,
+                    HttpStatus.NOT_FOUND
+               );
+          }
+
+          const payload = {
+               _id: user._id,
+               email: user.email
+          }
+
+          const token = this.utility.generateJWTToken(payload);
+
+          res.status(200).json({
+               message: 'Link has been sent to your email',
+               token
+          });
+
+
+     }
+
 
      @ApiOperation({ summary: 'Signin with Google' })
      @ApiResponse({ type: 'string' })
