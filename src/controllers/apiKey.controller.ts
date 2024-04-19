@@ -79,8 +79,6 @@ export class ApiKeyController {
         @Res() res: Response,
     ) {
 
-        console.log('hehheh')
-
         const { account_id } = <AuthUser>req.user;
 
         const response = await this.apiKeyService.getApiKeys(account_id);

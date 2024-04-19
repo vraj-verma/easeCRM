@@ -19,7 +19,7 @@ services:
     ports:
       - '${APP_PORT}:${APP_PORT}'
     volumes:
-      - ./ease-crm-api/src/:/app/src/:rw
+      - ./src/:/app/src/:rw
     environment:
       - APP_PORT=${APP_PORT}
       - MONGO_URI=${MONGO_URI}

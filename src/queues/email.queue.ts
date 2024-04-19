@@ -21,11 +21,10 @@ export class EmailProcessor {
 
      @Process('welcome')
      async sendWelcomeEmail(job: Job<Mail>) {
-
           try {
                const { data } = job;
 
-               const html = welcomeEmailTemplate.replace('[Customer Name]', data.name).replace('token', data.token);
+               const html = welcomeEmailTemplate.replace('[Customer Name]', data.name);
 
                await this.mailService.sendMail(
                     {
@@ -43,7 +42,6 @@ export class EmailProcessor {
 
      @Process('invite')
      async sendInviteEmail(job: Job<Mail>) {
-
           try {
                const { data } = job;
 

@@ -53,8 +53,8 @@ import { ThrottlerModule } from '@nestjs/throttler';
     MailerModule.forRoot(
       {
         transport: {
-          host: 'smtp.gmail.com',
-          port: 465,
+          host: process.env.GMAIL_HOST,
+          port: +process.env.GMAIL_PORT,
           secure: true,
           auth: {
             user: process.env.GMAIL_USER,
@@ -64,10 +64,10 @@ import { ThrottlerModule } from '@nestjs/throttler';
       }
     ),
     BullModule.forRoot({
-      redis: {
-        host: '"172.17.0.2',
-        port: 6379
-      },
+      redis: {  
+        host: process.env.REDIS_HOST,
+        port: +process.env.REDIS_PORT
+      }, 
     }),
     BullModule.registerQueue({
       name: 'sendingMail'

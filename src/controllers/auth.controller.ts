@@ -117,11 +117,11 @@ export class AuthController {
 
           const testEmails = this.utility.testingEmails;
 
-          if (!testEmails.includes(data.email)) {
-               this.mailService.sendWelcomeEmail(userData);
-          }
+          // if (!testEmails.includes(data.email)) {
+          //      this.mailService.sendWelcomeEmail(userData);
+          // }
 
-          // this.mailService.sendWelcomeEmail(userData);
+          this.mailService.sendWelcomeEmail(userData);
 
           res
                .status(201)
