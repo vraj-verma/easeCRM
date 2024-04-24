@@ -3,7 +3,10 @@ import { ObjectSchema } from "joi";
 
 @Injectable()
 export class MongoIdPipe implements PipeTransform {
-     constructor(private schema: ObjectSchema) { }
+
+     constructor(
+          private schema: ObjectSchema
+     ) { }
 
      transform(value: any) {
           const { error, value: schema } = this.schema.validate(value);
