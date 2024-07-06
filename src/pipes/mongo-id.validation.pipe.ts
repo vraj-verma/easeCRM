@@ -1,15 +1,27 @@
-import { BadRequestException, Injectable, PipeTransform } from "@nestjs/common";
-import { ObjectSchema } from "joi";
+import {
+     PipeTransform,
+     Injectable,
+     HttpException,
+     HttpStatus,
+} from '@nestjs/common';
+import mongoose from 'mongoose';
 
 @Injectable()
-export class MongoIdPipe implements PipeTransform {
-     constructor(private schema: ObjectSchema) { }
-
+export class MongoValidationPipe implements PipeTransform {
      transform(value: any) {
-          const { error, value: schema } = this.schema.validate(value);
-          if (error) {
-               throw new BadRequestException(error.details[0].message.replace(/([^A-Za-z0-9\s_]+)/g, ''))
+          if (!value) return;
+
+          if (typeof value === 'string' && mongoose.isObjectIdOrHexString(value)) {
+               return value;
           }
-          return schema;
+
+          value = Array.isArray(value) ? value : value.split(',');
+          const isInvalid = value.some(
+               (id: string) => !mongoose.isObjectIdOrHexString(id),
+          );
+          if (isInvalid) {
+               throw new HttpException(`Invalid mongo id: ${value}`, HttpStatus.BAD_REQUEST);
+          }
+          return value;
      }
 }

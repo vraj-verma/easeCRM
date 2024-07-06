@@ -148,16 +148,9 @@ export class AuthController {
                );
           }
 
-          if (!user.password) {
-               throw new Exception(
-                    `Please set your password, then login`,
-                    HttpStatus.BAD_REQUEST
-               );
-          }
-
           if (user.oAuth) {
                throw new Exception(
-                    `Created with Google, please try logging in with your Google account.`,
+                    `Created with Google, please try log in with your Google account.`,
                     HttpStatus.BAD_REQUEST
                );
           }
@@ -166,6 +159,13 @@ export class AuthController {
                throw new Exception(
                     `Account is not active, please contact to Admin`,
                     HttpStatus.NOT_FOUND
+               );
+          }
+
+          if (!user.password) {
+               throw new Exception(
+                    `Please set your password, then login`,
+                    HttpStatus.BAD_REQUEST
                );
           }
 

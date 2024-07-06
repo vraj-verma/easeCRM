@@ -30,7 +30,7 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { ApiKeyController } from './controllers/apiKey.controller';
 import { ProfileController } from './controllers/profile.controller';
 import { ContactController } from './controllers/contact.controller';
-import { JwtStrategy, TokenStrategy } from './security/jwt.strategy';
+import { JwtStrategy, APIKeyPassword } from './security/jwt.strategy';
 import { AccountController } from './controllers/account.controller';
 import { AdminController } from './controllers/admin/admin.controller';
 import { FileSizeValidationPipe } from './pipes/fileSizeValidation.pipe';
@@ -93,7 +93,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     UserService,
     JwtStrategy,
     JwtAuthGuard,
-    TokenStrategy,
+    APIKeyPassword,
     GoogleStrategy,
     ValidationPipe,
     MailService,

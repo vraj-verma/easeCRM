@@ -15,7 +15,7 @@ export class CronJobController {
           const directoryPath = path.join(__dirname, '../../public/temp');
 
           try {
-               fs.readdir(directoryPath, (err, files) => {
+               fs.readdir(directoryPath, (err: any, files: string[]) => {
                     if (err) {
                          console.error('Error reading directory:', err);
                          return;

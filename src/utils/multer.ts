@@ -1,4 +1,4 @@
-import multer, { diskStorage } from "multer"
+import { diskStorage } from "multer"
 import { extname } from "path";
 
 export const uploadOnLocal = {

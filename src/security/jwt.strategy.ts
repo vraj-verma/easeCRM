@@ -56,7 +56,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 }
 
 @Injectable()
-export class TokenStrategy extends PassportStrategy(customStrategy, 'apikey') {
+export class APIKeyPassword extends PassportStrategy(customStrategy, 'apikey') {
      constructor(
           private apiKeyService: ApiKeyService,
           private accountService: AccountService,

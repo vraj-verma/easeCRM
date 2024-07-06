@@ -17,18 +17,19 @@ import mongoose from "mongoose";
 import { Request, Response } from "express";
 import { AuthUser } from "../types/authUser";
 import { Paged, } from '../types/pagination';
+import { Role } from "../enums/enums";
+import { Roles } from "../security/roles.decorator";
 import { Contact } from "../schemas/contact.schema";
-import { JwtAuthGuard } from "../security/jwt.guard";
 import { RolesGuard } from "../security/roles.guard";
+import { JwtAuthGuard } from "../security/jwt.guard";
+import { Exception } from "../errors/exception.error";
 import { AssignContact } from "../types/assignContact";
+import { UserService } from "../services/users.service";
 import { ValidationPipe } from "../pipes/validation.pipe";
 import { ContactService } from "../services/contact.service";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JoiValidationSchema } from "../validations/schema.validation";
-import { UserService } from "../services/users.service";
-import { Roles } from "../security/roles.decorator";
-import { Role } from "../enums/enums";
-import { Exception } from "../errors/exception.error";
+import { MongoValidationPipe } from "../pipes/mongo-id.validation.pipe";
 
 @ApiTags('Contact Controller')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -105,7 +106,7 @@ export class ContactController {
      async getContactById(
           @Req() req: Request,
           @Res() res: Response,
-          @Param('id') contact_id: string
+          @Param('id', new MongoValidationPipe) contact_id: string
      ) {
 
           if (!mongoose.isValidObjectId(contact_id)) {
@@ -179,7 +180,7 @@ export class ContactController {
      async updateContactById(
           @Req() req: Request,
           @Res() res: Response,
-          @Param('id') contact_id: string,
+          @Param('id', new MongoValidationPipe) contact_id: string,
           @Body(new ValidationPipe(JoiValidationSchema.createContactSchema)) contact: Contact
      ) {
           const { _id, account_id } = <AuthUser>req.user;
@@ -226,7 +227,7 @@ export class ContactController {
      async partialUpdateContactById(
           @Req() req: Request,
           @Res() res: Response,
-          @Param('id') contact_id: string,
+          @Param('id', new MongoValidationPipe) contact_id: string,
           @Body() contact: any
      ) {
 

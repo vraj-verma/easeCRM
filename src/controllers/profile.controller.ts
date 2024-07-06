@@ -18,14 +18,17 @@ import {
 import {
      FileFieldsInterceptor
 } from "@nestjs/platform-express";
+import {
+     removeFromCloudinary,
+     uploadOnCloudinary
+} from "../utils/cloudinary";
 import { Request, Response } from "express";
 import { AuthUser } from "../types/authUser";
 import { uploadOnLocal } from "../utils/multer";
-import { JwtAuthGuard } from "../security/jwt.guard";
-import { removeFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary";
-import { ProfileService } from "../services/profile.service";
-import { Exception } from "../errors/exception.error";
 import { Profile } from "../schemas/profile.schema";
+import { JwtAuthGuard } from "../security/jwt.guard";
+import { Exception } from "../errors/exception.error";
+import { ProfileService } from "../services/profile.service";
 
 @ApiTags('Profile Controller')
 @UseGuards(JwtAuthGuard)
@@ -93,7 +96,6 @@ export class ProfileController {
      @ApiResponse({ type: 'string' })
      @Patch('remove-avatar')
      async removeAvatar(
-          @Req() req: Request,
           @Res() res: Response,
           @Query('image_url') image_url: string
      ) {
@@ -119,7 +121,7 @@ export class ProfileController {
                {
                     message: 'Avatar removed successfully'
                }
-          )
+          );
      }
 
 

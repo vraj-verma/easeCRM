@@ -9,21 +9,25 @@ import {
      Res,
      UseGuards
 } from "@nestjs/common";
+import {
+     ApiOperation,
+     ApiResponse,
+     ApiTags
+} from "@nestjs/swagger";
 import { Role } from "../enums/enums";
 import { Request, Response } from "express";
 import { AuthUser } from "../types/authUser";
 import { Account } from "../schemas/account.schema";
+import { Roles } from "../security/roles.decorator";
+import { RolesGuard } from "../security/roles.guard";
 import { JwtAuthGuard } from "../security/jwt.guard";
+import { Exception } from "../errors/exception.error";
 import { UserService } from "../services/users.service";
 import { ValidationPipe } from "../pipes/validation.pipe";
 import { ApiKeyService } from "../services/apiKey.service";
 import { ProfileService } from "../services/profile.service";
 import { AccountService } from "../services/account.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Roles } from "../security/roles.decorator";
-import { RolesGuard } from "../security/roles.guard";
-import { Exception } from "../errors/exception.error";
 
 @ApiTags('Account Controller')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -77,7 +81,7 @@ export class AccountController {
                );
           }
           const response = await this.accountService.updateAccount(account_id, account);
-
+  
           if (!response) {
                throw new Exception(
                     `Failed to update account`,
