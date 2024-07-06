@@ -150,7 +150,7 @@ export class UserController {
                );
           }
 
-          const hash = await this.utility.decryptPassword(joinUser.password);
+          const hash = await this.utility.encryptPassword(joinUser.password);
 
           const setPassword = await this.userService.updatePassword(decodedToken._id, hash);
 
@@ -189,7 +189,7 @@ export class UserController {
                );
           }
 
-          const hash = await this.utility.decryptPassword(payload.password);
+          const hash = await this.utility.encryptPassword(payload.password);
 
           const response = await this.userService.updatePassword(_id, hash);
 

@@ -73,7 +73,7 @@ export class AuthController {
                users_limit: 2,
           }
 
-          const hash = await this.utility.decryptPassword(data.password);
+          const hash = await this.utility.encryptPassword(data.password);
           data.password = hash;
 
           const account_id = await this.authService.signup(accountInitalData);
@@ -169,7 +169,7 @@ export class AuthController {
                );
           }
 
-          const isPasswordMatch = await this.utility.encryptPassword(signinPayload.password, user.password);
+          const isPasswordMatch = await this.utility.decryptPassword(signinPayload.password, user.password);
 
           if (!isPasswordMatch) {
                throw new Exception(

@@ -31,13 +31,13 @@ export class Utility {
      }
 
 
-     async decryptPassword(password: string) {
+     async encryptPassword(password: string) {
           const salt = await bcrypt.genSalt(7);
           const hash = bcrypt.hash(password, salt);
           return hash;
      }
 
-     async encryptPassword(compareTo: string, compareWith: string) {
+     async decryptPassword(compareTo: string, compareWith: string) {
           return await bcrypt.compare(compareTo, compareWith);
      }
 }
