@@ -8,7 +8,6 @@ export type UserDocument = User & Document;
 @Schema({ timestamps: true })
 export class User {
 
-
      @ApiProperty({ required: false })
      @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Account' })
      account_id: Types.ObjectId | string;
@@ -36,6 +35,14 @@ export class User {
      @ApiProperty({ required: false })
      @Prop({ default: false })
      oAuth?: boolean;
+
+     @ApiProperty({ required: false })
+     @Prop({ default: false })
+     is2FAEnabled?: boolean;
+
+     @ApiProperty({ required: false })
+     @Prop({ type: String })
+     twoFASecrets?: string;
 
 }
 

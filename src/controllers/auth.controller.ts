@@ -15,6 +15,8 @@ import {
      ApiResponse,
      ApiTags
 } from "@nestjs/swagger";
+import * as qrcode from 'qrcode';
+import { authenticator } from 'otplib';
 import { JwtService } from "@nestjs/jwt";
 import { Signin } from "../types/signin";
 import { Signup } from "../types/signup";
@@ -23,7 +25,10 @@ import { Request, Response } from "express";
 import { AuthUser } from './../types/authUser';
 import { User } from "../schemas/users.schema";
 import { User as UserType } from '../types/user'
+import { ThrottlerGuard } from "@nestjs/throttler";
 import { Plan, Role, Status } from "../enums/enums";
+import { JwtAuthGuard } from "../security/jwt.guard";
+import { Exception } from "../errors/exception.error";
 import { AuthService } from "../services/auth.service";
 import { UserService } from "../services/users.service";
 import { ValidationPipe } from "../pipes/validation.pipe";
@@ -31,20 +36,18 @@ import { GoogleOAuthGuard } from "../security/google.guard";
 import { ProfileService } from "../services/profile.service";
 import { MailService } from "../mails/mail-template.service";
 import { JoiValidationSchema } from "../validations/schema.validation";
-import { Exception } from "../errors/exception.error";
-import { ThrottlerGuard } from "@nestjs/throttler";
 
 @ApiTags('Auth Controller')
 @Controller('auth')
 export class AuthController {
 
      constructor(
-          private authService: AuthService,
-          private userService: UserService,
-          private mailService: MailService,
+          private utility: Utility,
           private jwtService: JwtService,
+          private userService: UserService,
+          private authService: AuthService,
+          private mailService: MailService,
           private profileService: ProfileService,
-          private utility: Utility
      ) { }
 
      @ApiOperation({ summary: 'Create an account' })
@@ -115,7 +118,7 @@ export class AuthController {
                );
           }
 
-          const testEmails = this.utility.testingEmails;
+          // const testEmails = this.utility.testingEmails;
 
           // if (!testEmails.includes(data.email)) {
           //      this.mailService.sendWelcomeEmail(userData);
@@ -180,7 +183,9 @@ export class AuthController {
 
           const payload = {
                _id: user._id,
-               email: user.email
+               email: user.email,
+               role: user.role,
+               is2FAEnabled: user.is2FAEnabled
           }
 
           const token = this.utility.generateJWTToken(payload);
@@ -202,11 +207,86 @@ export class AuthController {
                );
      }
 
+     @ApiOperation({ summary: 'Enable two factor authentication' })
+     @ApiResponse({ type: String })
+     @UseGuards(JwtAuthGuard)
+     @Get('setup/2FA')
+     async setup2FA(
+          @Req() req: Request,
+          @Res() res: Response
+     ) {
+
+          const user = <AuthUser>req.user;
+
+          const secret = authenticator.generateSecret();
+
+          const otpUrl = authenticator.keyuri(user.email, 'EASE CRM', secret);
+
+          await this.userService.setTwoFactorAuthenticationSecret(secret, user.email);
+
+          const qr = await qrcode.toDataURL(otpUrl);
+
+          res.status(200).json(
+               {
+                    message: `2FA successfully setup, please note down the secret, it will help you to connect with your authenticator app`,
+                    secret,
+                    qr
+               }
+          );
+
+     }
+
+     @ApiOperation({ summary: 'Verify two factor authentication' })
+     @ApiResponse({ type: String })
+     @UseGuards(JwtAuthGuard)
+     @Get('verify/2FA')
+     async verify2FA(
+          @Req() req: Request,
+          @Res() res: Response,
+          @Body('code') code: string
+     ) {
+
+          if (!code) {
+               throw new Exception(
+                    `Provide TOTP code`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
+
+          const { email } = <AuthUser>req.user;
+
+          const user = await this.userService.getUserByEmail(email);
+
+          if (!user.is2FAEnabled) {
+               throw new Exception(
+                    `Please setup 2FA first`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
+
+          const is2FAValid = authenticator.check(code, user.twoFASecrets);
+
+          if (!is2FAValid) {
+               throw new Exception(
+                    `Invalid TOTP code`,
+                    HttpStatus.BAD_REQUEST
+               );
+          }
+
+          res.status(200).json(
+               {
+                    success: true,
+                    message: `Valid TOTP code`
+               }
+          );
+
+     }
+
+
      @ApiOperation({ summary: 'Verify account & access account' })
      @ApiResponse({ type: 'string' })
      @Get('verify-account')
      async verifyAccount(
-          @Req() req: Request,
           @Res() res: Response,
           @Query('token') token: string
      ) {
@@ -288,7 +368,6 @@ export class AuthController {
                token
           });
 
-
      }
 
 
@@ -306,15 +385,15 @@ export class AuthController {
           @Res() res: Response,
      ) {
 
-          const user = req.user;
+          const user = <AuthUser>req.user;
 
-          const isUserExist = await this.userService.getUserByEmail(user['email']);
+          const isUserExist = await this.userService.getUserByEmail(user.email);
 
           if (isUserExist) {
 
                const payload = {
                     _id: isUserExist._id,
-                    email: user['email']
+                    email: user.email
                }
 
                const token = this.jwtService.sign(payload);
@@ -334,8 +413,8 @@ export class AuthController {
                     );
           } else {
                const accountInitalData = {
-                    email: user['email'],
-                    name: user['name'],
+                    email: user.email,
+                    name: user.name,
                     role: Role.OWNER,
                     plan: Plan.FREE,
                     users_used: 1,
@@ -352,8 +431,8 @@ export class AuthController {
 
                const userData = {
                     account_id: response['_id'],
-                    email: user['email'],
-                    name: user['name'] ? user['name'] : 'John Doe',
+                    email: user.email,
+                    name: user.name ? user.name : 'John Doe',
                     role: Role.OWNER,
                     password: '',
                     verified: false,
@@ -364,13 +443,13 @@ export class AuthController {
 
                const payload = {
                     _id: creatUser._id,
-                    email: user['email']
+                    email: user.email
                }
 
                const token = this.utility.generateJWTToken(payload);
 
                try {
-                    await this.mailService.sendWelcomeEmail({ name: user['name'], email: user['email'], token });
+                    await this.mailService.sendWelcomeEmail({ name: user.name, email: user.email, token });
                } catch (e) {
                     console.log('Redis server either not started or stopped.', e)
                }
@@ -378,7 +457,7 @@ export class AuthController {
                // save avatar only in google OAuth case
                const profileInfo = {
                     user_id: creatUser._id,
-                    email: user['email'],
+                    email: user.email,
                     avatar: user['avatar']
                }
 
@@ -387,10 +466,10 @@ export class AuthController {
                const authUser: AuthUser = {
                     account_id: response['account_id'],
                     _id: creatUser._id,
-                    email: user['email'],
+                    email: user.email,
                     role: Role.OWNER,
                     status: Status.ACTIVE,
-                    name: user['name'],
+                    name: user.name,
                     users_limit: 1,
                     users_used: 2,
                     token

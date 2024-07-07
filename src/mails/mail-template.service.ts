@@ -6,7 +6,7 @@ import { Queue } from 'bull';
 @Injectable()
 export class MailService {
      constructor(
-          @InjectQueue('sendingMail') private emailQueue: Queue,
+          @InjectQueue('mail-queue') private emailQueue: Queue,
      ) { }
 
      async sendWelcomeEmail(user: any) {

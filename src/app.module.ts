@@ -11,13 +11,16 @@ import { Utility } from './utils/utility';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { JwtAuthGuard } from './security/jwt.guard';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { AuthService } from './services/auth.service';
+import { JwtStrategy } from './security/jwt.strategy';
 import { EmailProcessor } from './queues/email.queue';
 import { UserService } from './services/users.service';
 import { Schemas } from './mongoSchemas/schemas.config';
 import { ApiKeyService } from './services/apiKey.service';
+import { APIKeyStrategy } from './security/apiKey.strategy';
 import { MailService } from './mails/mail-template.service';
 import { GoogleStrategy } from './security/google.strategy';
 import { ProfileService } from './services/profile.service';
@@ -30,11 +33,9 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { ApiKeyController } from './controllers/apiKey.controller';
 import { ProfileController } from './controllers/profile.controller';
 import { ContactController } from './controllers/contact.controller';
-import { JwtStrategy, APIKeyPassword } from './security/jwt.strategy';
 import { AccountController } from './controllers/account.controller';
 import { AdminController } from './controllers/admin/admin.controller';
 import { FileSizeValidationPipe } from './pipes/fileSizeValidation.pipe';
-import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -64,14 +65,14 @@ import { ThrottlerModule } from '@nestjs/throttler';
       }
     ),
     BullModule.forRoot({
-      redis: {  
+      redis: {
         host: process.env.REDIS_HOST,
         port: +process.env.REDIS_PORT,
         password: process.env.REDIS_PASSWORD
-      }, 
+      },
     }),
     BullModule.registerQueue({
-      name: 'sendingMail'
+      name: 'mail-queue'
     }),
     ThrottlerModule.forRoot([{
       ttl: +process.env.THROTTLE_TTL,
@@ -93,7 +94,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     UserService,
     JwtStrategy,
     JwtAuthGuard,
-    APIKeyPassword,
+    APIKeyStrategy,
     GoogleStrategy,
     ValidationPipe,
     MailService,

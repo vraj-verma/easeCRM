@@ -2,7 +2,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { Mail } from '../types/mail.type';
-import fs, { readFileSync } from 'fs';
+import { readFileSync } from 'fs';
 import { join } from 'path';
 
 // welcome email template
@@ -13,7 +13,7 @@ const welcomeEmailTemplate = readFileSync(welcomeTemplatePath, 'utf-8');
 const inviteTemplatePath = join('src/templates/invite-user.template.html')
 const inviteEmailTemplate = readFileSync(inviteTemplatePath, 'utf-8');
 
-@Processor('sendingMail')
+@Processor('mail-queue')
 export class EmailProcessor {
      constructor(
           private readonly mailService: MailerService
