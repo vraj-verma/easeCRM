@@ -188,8 +188,28 @@ export class UserService {
                     },
                     {
                          $set: {
-                              is2FAEnabled: true,
+                              // is2FAEnabled: true,
                               twoFASecrets: secret
+                         }
+                    }
+               );
+
+               return response.modifiedCount > 0 || false;
+          } catch (error) {
+               console.log('Something went wrong', error);
+               return;
+          }
+     }
+
+     async enableTwoFactorAuthentication(email: string): Promise<boolean> {
+          try {
+               const response = await this.userDB.updateOne(
+                    {
+                         email
+                    },
+                    {
+                         $set: {
+                              is2FAEnabled: true
                          }
                     }
                );

@@ -236,6 +236,33 @@ export class AuthController {
 
      }
 
+
+     @ApiOperation({ summary: 'Validate two factor authentication' })
+     @ApiResponse({ type: String })
+     @UseGuards(JwtAuthGuard)
+     @Get('validate/2FA')
+     async validate2FA(
+          @Req() req: Request,
+          @Res() res: Response
+     ) {
+
+          const { email } = <AuthUser>req.user;
+
+          const response = await this.userService.enableTwoFactorAuthentication(email);
+
+          if (!response) {
+               throw new Exception(
+                    'Failed to validate Two factor authentication',
+                    HttpStatus.BAD_REQUEST
+               );
+          }
+
+          res.status(200).json({
+               message: `Two factor authentication validate successfully`
+          });
+     }
+
+
      @ApiOperation({ summary: 'Verify two factor authentication' })
      @ApiResponse({ type: String })
      @UseGuards(JwtAuthGuard)
