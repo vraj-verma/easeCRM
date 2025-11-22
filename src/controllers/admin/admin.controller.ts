@@ -22,10 +22,10 @@ export class AdminController {
      @Get('users')
      async getUsers(
           @Res() res: Response,
-          @Query() passcode: string
+          @Query('passcode') passcode: string
      ) {
 
-          if (Object.keys(passcode).length == 0 || passcode['passcode'] !== process.env.PASSCODE) {
+          if (!passcode || passcode['passcode'] !== process.env.PASSCODE) {
                throw new Exception(
                     `Passcode required or incorrect`,
                     HttpStatus.UNAUTHORIZED
@@ -33,6 +33,7 @@ export class AdminController {
           }
 
           const response = await this.userService.getUsers();
+          
           if (!response) {
                throw new Exception(
                     `No user(s) found`,
@@ -40,7 +41,10 @@ export class AdminController {
                );
           }
 
-          res.status(200).json(...response);
+          res.status(200).json({
+               status: true,
+               response
+          });
      }
 
 }
